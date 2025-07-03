@@ -1,0 +1,1 @@
+ALTER TABLE users ADD role VARCHAR(10) NOT NULL DEFAULT 'patient';
