@@ -31,6 +31,19 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -46,7 +59,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-<!--            <version>42.7.7</version>-->
+            <!--            <version>42.7.7</version>-->
             <scope>runtime</scope>
         </dependency>
 
@@ -54,14 +67,14 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-<!--            <version>11.8.0</version>-->
+            <!--            <version>11.8.0</version>-->
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-database-postgresql -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
-<!--            <version>11.8.0</version>-->
+            <!--            <version>11.8.0</version>-->
             <scope>runtime</scope>
         </dependency>
 
@@ -71,6 +84,22 @@
             <artifactId>h2</artifactId>
             <!--            <version>2.3.232</version>-->
             <!--            to work with dev -> replace it "test" with "runtime"-->
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.testcontainers/junit-jupiter -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.21.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.testcontainers/postgresql -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>1.21.3</version>
             <scope>test</scope>
         </dependency>
 
@@ -143,6 +172,28 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- It was added to bypass this warning: "Mockito is currently self-attaching to
+                 enable the inline-mock-maker. This will no longer work in future releases of
+                 the JDK. Please add Mockito as an agent to your build as described in Mockito's
+                 documentation"
+            -->
+            <!-- ${settings.localRepository} refers to the path of your local Maven repository,
+                 where Maven stores downloaded dependencies and plugins. You typically don’t
+                 need to configure this manually as Maven provides it automatically, so you can
+                 safely use it in your pom.xml. By default, it points to ${user.home}/.m2/repository.
+                 For more details, see the official Maven
+             -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+                        -Xshare:off
+                    </argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>

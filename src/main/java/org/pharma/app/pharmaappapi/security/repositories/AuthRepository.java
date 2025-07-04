@@ -1,11 +1,8 @@
 package org.pharma.app.pharmaappapi.security.repositories;
 
-import org.pharma.app.pharmaappapi.security.models.Patient;
 import org.pharma.app.pharmaappapi.security.models.RoleName;
 import org.pharma.app.pharmaappapi.security.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
