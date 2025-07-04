@@ -47,8 +47,6 @@ public class Patient {
     @Column(name = "cpf", nullable = false)
     private String cpf;
 
-    @NotNull
-    @NotBlank
     @Past(message = "Field birthday must be a past date")
     @Column(name = "birthday")
     private LocalDate birthday;

@@ -6,13 +6,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
+import org.pharma.app.pharmaappapi.exceptions.ConflictAPIException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
+import org.pharma.app.pharmaappapi.security.models.Role;
 import org.pharma.app.pharmaappapi.security.models.RoleName;
 import org.pharma.app.pharmaappapi.security.models.User;
 import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
+import org.pharma.app.pharmaappapi.security.repositories.RoleRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +29,10 @@ class AuthServiceTest {
     private AuthRepository authRepository;
 
     @Mock
-    private ModelMapper modelMapper;
+    private RoleRepository roleRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -47,14 +53,16 @@ class AuthServiceTest {
     void signUpPatientSuccess() {
         SignUpPatientDTO signUpDTO = new SignUpPatientDTO(
                 validFullName, validEmail, validPassword, validPasswordConfirmation, validCpf);
-        User mappedUser = new User();
-        
+
         // patientExists is set to false without querying db
-        when(authRepository.existsByEmailAndRoleName(signUpDTO.getEmail(), RoleName.ROLE_PATIENT))
-                .thenReturn(false);
-        // we don't need to test modelMapper. Just returns a mocked user (mappedUser)
-        when(modelMapper.map(signUpDTO, User.class))
-                .thenReturn(mappedUser);
+        when(authRepository.existsByEmailAndRole_Name(signUpDTO.getEmail(), RoleName.ROLE_PATIENT)).thenReturn(false);
+        when(authRepository.existsByPatient_CpfAndRole_Name(signUpDTO.getCpf(), RoleName.ROLE_PATIENT)).thenReturn(false);
+
+        String hashedPassword = "hashedPassword123";
+        when(passwordEncoder.encode(validPassword)).thenReturn(hashedPassword);
+
+        Role patientRole = new Role(RoleName.ROLE_PATIENT);
+        when(roleRepository.findFirstByName(RoleName.ROLE_PATIENT)).thenReturn(patientRole);
 
         authService.signUpPatient(signUpDTO);
 
@@ -65,20 +73,38 @@ class AuthServiceTest {
         // Get the User object we captured before
         User savedUser = userArgumentCaptor.getValue();
 
+        assertThat(savedUser.getFullName()).isEqualTo(validFullName);
+        assertThat(savedUser.getEmail()).isEqualTo(validEmail);
+        assertThat(savedUser.getPassword()).isEqualTo(hashedPassword);
         assertThat(savedUser.getRole().getName()).isEqualTo(RoleName.ROLE_PATIENT);
+        assertThat(savedUser.getPatient()).isNotNull();
+        assertThat(savedUser.getPatient().getCpf()).isEqualTo(validCpf);
+        assertThat(savedUser.getPatient().getUser()).isEqualTo(savedUser); // assert bidirectional relation
     }
 
     @Test
-    void signUpPatientAlreadyExistsFail() {
+    void signUpPatientAlreadyExistsByEmailFail() {
         SignUpPatientDTO signUpDTO = new SignUpPatientDTO(validFullName, validEmail, validPassword, validPasswordConfirmation, validCpf);
 
         // patientExists is set to true without querying db
-        when(authRepository.existsByEmailAndRoleName(signUpDTO.getEmail(), RoleName.ROLE_PATIENT))
-                .thenReturn(true);
-        
-        assertThrows(ResourceAlreadyExistsException.class, () -> {
-            authService.signUpPatient(signUpDTO);
-        });
+        when(authRepository.existsByEmailAndRole_Name(signUpDTO.getEmail(), RoleName.ROLE_PATIENT)).thenReturn(true);
+        when(authRepository.existsByPatient_CpfAndRole_Name(signUpDTO.getCpf(), RoleName.ROLE_PATIENT)).thenReturn(false);
+
+        assertThrows(ResourceAlreadyExistsException.class, () -> authService.signUpPatient(signUpDTO));
+
+        // Verify if save method was never called (because exception was thrown before it)
+        verify(authRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void signUpPatientAlreadyExistsByCpfFail() {
+        SignUpPatientDTO signUpDTO = new SignUpPatientDTO(validFullName, validEmail, validPassword, validPasswordConfirmation, validCpf);
+
+        // patientExists is set to true without querying db
+        when(authRepository.existsByEmailAndRole_Name(signUpDTO.getEmail(), RoleName.ROLE_PATIENT)).thenReturn(false);
+        when(authRepository.existsByPatient_CpfAndRole_Name(signUpDTO.getCpf(), RoleName.ROLE_PATIENT)).thenReturn(true);
+
+        assertThrows(ResourceAlreadyExistsException.class, () -> authService.signUpPatient(signUpDTO));
 
         // Verify if save method was never called (because exception was thrown before it)
         verify(authRepository, never()).save(any(User.class));
@@ -89,14 +115,10 @@ class AuthServiceTest {
         SignUpPatientDTO signUpDTO = new SignUpPatientDTO(validFullName, validEmail, validPassword, wrongPasswordConfirmation, validCpf);
 
         // patientExists is set to false without querying db
-        when(authRepository.existsByEmailAndRoleName(signUpDTO.getEmail(), RoleName.ROLE_PATIENT))
-                .thenReturn(false);
-        
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            authService.signUpPatient(signUpDTO);
-        });
+        when(authRepository.existsByPatient_CpfAndRole_Name(signUpDTO.getCpf(), RoleName.ROLE_PATIENT)).thenReturn(false);
+        when(authRepository.existsByEmailAndRole_Name(signUpDTO.getEmail(), RoleName.ROLE_PATIENT)).thenReturn(false);
 
-        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThrows(ConflictAPIException.class, () -> authService.signUpPatient(signUpDTO));
 
         // Verify if save method was never called (because exception was thrown before it)
         verify(authRepository, never()).save(any(User.class));

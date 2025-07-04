@@ -41,6 +41,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
     }
 
+    @ExceptionHandler(ConflictAPIException.class)
+    public ResponseEntity<APIExceptionResponse> customConflictAPIException(ConflictAPIException e) {
+        String message = e.getMessage();
+        Integer statusCode = HttpStatus.CONFLICT.value();
+        APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     public ResponseEntity<APIExceptionResponse> customResourceAlreadyExistsException(ResourceAlreadyExistsException e) {
         String message = e.getMessage();

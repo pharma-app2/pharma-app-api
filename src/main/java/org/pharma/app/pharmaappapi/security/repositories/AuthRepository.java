@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface AuthRepository extends JpaRepository<User, UUID> {
-    Boolean existsByEmailAndRoleName(String email, RoleName roleName);
-    Boolean existsByPatient_CpfOrEmailAndRole(String cpf, String email, RoleName roleName);
+    Boolean existsByEmailAndRole_Name(String email, RoleName roleName);
+    Boolean existsByPatient_CpfAndRole_Name(String cpf, RoleName roleName);
 }

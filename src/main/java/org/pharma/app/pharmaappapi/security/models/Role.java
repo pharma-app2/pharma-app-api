@@ -23,6 +23,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Role {
+    public Role(RoleName name) {
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
