@@ -6,7 +6,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class PharmaAppApiApplicationTests {
+class PharmaAppApiApplicationTests extends AbstractIntegrationTest {
 
     @Test
     void contextLoads() {
