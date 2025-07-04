@@ -13,11 +13,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignUpPatientDTO {
-    public SignUpPatientDTO(String fullName, String email, String password, String passwordConfirmation) {
+    public SignUpPatientDTO(String fullName, String email, String password, String passwordConfirmation, String cpf) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.passwordConfirmation = passwordConfirmation;
+        this.cpf = cpf;
     }
 
     private UUID id;
@@ -57,4 +58,13 @@ public class SignUpPatientDTO {
             message = "Field passwordConfirmation must have between 3 and 255 characters"
     )
     private String passwordConfirmation;
+
+    @NotNull
+    @NotBlank
+    @Size(
+            min = 11,
+            max = 11,
+            message = "Field cpf must have 11 characters"
+    )
+    private String cpf;
 }

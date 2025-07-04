@@ -42,11 +42,13 @@ class AuthControllerTest {
     private static final String wrongPasswordConfirmation = "123abcd";
     private static final String validEmail = "john@doe.com";
     private static final String invalidEmail = "john_doe.com";
+    private static final String validCpf = "12345678999";
+    private static final String invalidCpf = "123456789999";
 
     @Test
     void signUpPatientSuccess() throws Exception {
         SignUpPatientDTO signUpDTO = new SignUpPatientDTO(
-                validFullName, validEmail, validPassword, validPasswordConfirmation);
+                validFullName, validEmail, validPassword, validPasswordConfirmation, validCpf);
 
         // Verify if method returns nothing (void)
         doNothing().when(authService).signUpPatient(any(SignUpPatientDTO.class));
@@ -64,7 +66,7 @@ class AuthControllerTest {
     @Test
     void signUpPatientInvalidDataFail() throws Exception {
         SignUpPatientDTO invalidSignUpDTO = new SignUpPatientDTO(
-                invalidFullName, validEmail, validPassword, validPasswordConfirmation);
+                invalidFullName, validEmail, validPassword, validPasswordConfirmation, validCpf);
 
         mockMvc.perform(post("/api/auth/signup/patient")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -25,6 +25,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+    public User(String fullName, String email, String password) {
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
@@ -71,6 +77,9 @@ public class User {
     create this new role in db - we don't want that.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", nullable = false)
+    @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     private Role role;
+
+    @OneToOne(mappedBy = "user", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
+    private Patient patient;
 }

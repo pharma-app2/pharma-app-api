@@ -3,6 +3,7 @@ package org.pharma.app.pharmaappapi.security.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Patient {
+    public Patient(String cpf) {
+        this.cpf = cpf;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
@@ -44,11 +49,11 @@ public class Patient {
 
     @NotNull
     @NotBlank
-    @Size(
-            min = 3,
-            max = 10,
-            message = "Field birthday must have between 3 and 10 characters"
-    )
-    @Column(name = "birthday", nullable = false)
-    private LocalDate birthday = LocalDate.now();
+    @Past(message = "Field birthday must be a past date")
+    @Column(name = "birthday")
+    private LocalDate birthday;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
+    private User user;
 }

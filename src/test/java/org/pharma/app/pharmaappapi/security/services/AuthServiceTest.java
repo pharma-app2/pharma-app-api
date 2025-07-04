@@ -40,11 +40,13 @@ class AuthServiceTest {
     private static final String wrongPasswordConfirmation = "123abcd";
     private static final String validEmail = "john@doe.com";
     private static final String invalidEmail = "john_doe.com";
+    private static final String validCpf = "12345678999";
+    private static final String invalidCpf = "123456789999";
 
     @Test
     void signUpPatientSuccess() {
         SignUpPatientDTO signUpDTO = new SignUpPatientDTO(
-                validFullName, validEmail, validPassword, validPasswordConfirmation);
+                validFullName, validEmail, validPassword, validPasswordConfirmation, validCpf);
         User mappedUser = new User();
         
         // patientExists is set to false without querying db
@@ -68,7 +70,7 @@ class AuthServiceTest {
 
     @Test
     void signUpPatientAlreadyExistsFail() {
-        SignUpPatientDTO signUpDTO = new SignUpPatientDTO(validFullName, validEmail, validPassword, validPasswordConfirmation);
+        SignUpPatientDTO signUpDTO = new SignUpPatientDTO(validFullName, validEmail, validPassword, validPasswordConfirmation, validCpf);
 
         // patientExists is set to true without querying db
         when(authRepository.existsByEmailAndRoleName(signUpDTO.getEmail(), RoleName.ROLE_PATIENT))
@@ -84,7 +86,7 @@ class AuthServiceTest {
 
     @Test
     void signUpPatientWrongConfirmationPasswordFail() {
-        SignUpPatientDTO signUpDTO = new SignUpPatientDTO(validFullName, validEmail, validPassword, wrongPasswordConfirmation);
+        SignUpPatientDTO signUpDTO = new SignUpPatientDTO(validFullName, validEmail, validPassword, wrongPasswordConfirmation, validCpf);
 
         // patientExists is set to false without querying db
         when(authRepository.existsByEmailAndRoleName(signUpDTO.getEmail(), RoleName.ROLE_PATIENT))
