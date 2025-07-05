@@ -10,16 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpPatientDTO {
-    @NotNull
-    @NotBlank
-    @Size(
-            min = 3,
-            max = 50,
-            message = "Field fullName must have between 3 and 50 characters"
-    )
-    private String fullName;
-
+public class SignInPatientDTO {
     @NotNull
     @NotBlank
     @Size(
@@ -37,22 +28,4 @@ public class SignUpPatientDTO {
             message = "Field password must have between 3 and 255 characters"
     )
     private String password;
-
-    @NotNull
-    @NotBlank
-    @Size(
-            min = 3,
-            max = 255,
-            message = "Field passwordConfirmation must have between 3 and 255 characters"
-    )
-    private String passwordConfirmation;
-
-    @NotNull
-    @NotBlank
-    @Size(
-            min = 11,
-            max = 11,
-            message = "Field cpf must have 11 characters"
-    )
-    private String cpf;
 }
