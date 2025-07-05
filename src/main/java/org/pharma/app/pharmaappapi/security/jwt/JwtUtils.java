@@ -18,12 +18,12 @@ import java.util.Date;
 @Component
 public class JwtUtils {
     // TODO: change to a secure place for production
-    private static final SecretKey key = Jwts.SIG.HS256.key().build();
-    private static final String keyId = "pharma-app-key-1";
-    private static final String issuer = "pharma-app-api";
-    private static final String aud = "pharma-app-aud";
-    private static final String jwtCookieName = "jwt-cookie";
-    private static final Long expTime = 5 * 60 * 60 * 1000L;
+    private static SecretKey key = Jwts.SIG.HS256.key().build();
+    private static String keyId = "pharma-app-key-1";
+    private static String issuer = "pharma-app-api";
+    private static String aud = "pharma-app-aud";
+    private static String jwtCookieName = "jwt-cookie";
+    private static Long expTime = 5 * 60 * 60 * 1000L;
 
     public Claims validateAndParseClaims(String token) {
         try {
@@ -36,23 +36,26 @@ public class JwtUtils {
             return parser.parseSignedClaims(token).getPayload();
 
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException(String.format("JWT Token has expired: %s", e.getMessage()));
+            throw new RuntimeException(String.format("JWT Token has expired: %s", e.getMessage()), e);
 
         } catch (UnsupportedJwtException e) {
-            throw new RuntimeException(String.format("JWT Token is unsupported: %s", e.getMessage()));
+            throw new RuntimeException(String.format("JWT Token is unsupported: %s", e.getMessage()), e);
 
         } catch (MalformedJwtException e) {
-            throw new RuntimeException(String.format("Invalid JWT Token: %s", e.getMessage()));
+            throw new RuntimeException(String.format("Invalid JWT Token: %s", e.getMessage()), e);
 
         } catch (SignatureException e) {
-            throw new RuntimeException(String.format("Invalid JWT signature: %s", e.getMessage()));
+            throw new RuntimeException(String.format("Invalid JWT signature: %s", e.getMessage()), e);
 
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException(String.format("JWT claims string is empty: %s", e.getMessage()));
+            throw new RuntimeException(String.format("JWT claims string is empty: %s", e.getMessage()), e);
+
+        } catch (InvalidClaimException e) {
+            throw new RuntimeException(String.format("Invalid JWT claim: %s", e.getMessage()), e);
         }
     }
 
-    private String buildJwt(JwtPayloadPatientDTO payload) {
+    public String buildJwt(JwtPayloadPatientDTO payload) {
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
         // TODO: change exp to a secure place
