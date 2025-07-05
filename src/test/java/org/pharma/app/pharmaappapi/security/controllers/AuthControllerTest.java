@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
 import org.pharma.app.pharmaappapi.security.config.SecurityConfig;
+import org.pharma.app.pharmaappapi.security.exceptions.CustomAuthEntryPoint;
+import org.pharma.app.pharmaappapi.security.jwt.JwtUtils;
 import org.pharma.app.pharmaappapi.security.services.AuthService;
+import org.pharma.app.pharmaappapi.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -29,9 +32,18 @@ class AuthControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // It's a mock, not the real authService
+    // It's a mock, not the real authService. We have to add it because mocks doesn't add beans
     @MockitoBean
     private AuthService authService;
+
+    @MockitoBean
+    private JwtUtils jwtUtils;
+
+    @MockitoBean
+    private UserDetailsServiceImpl userDetailsService;
+
+    @MockitoBean
+    private CustomAuthEntryPoint customAuthEntryPoint;
 
     private static final String validFullName = "John Doe";
     private static final String invalidFullName = "";

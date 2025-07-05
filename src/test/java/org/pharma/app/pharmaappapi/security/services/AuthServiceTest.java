@@ -9,11 +9,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.pharma.app.pharmaappapi.exceptions.ConflictAPIException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
+import org.pharma.app.pharmaappapi.security.config.SecurityConfig;
 import org.pharma.app.pharmaappapi.security.models.Role;
 import org.pharma.app.pharmaappapi.security.models.RoleName;
 import org.pharma.app.pharmaappapi.security.models.User;
 import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
 import org.pharma.app.pharmaappapi.security.repositories.RoleRepository;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
