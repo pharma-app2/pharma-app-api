@@ -26,7 +26,6 @@ public class UserDetailsImpl implements UserDetails {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    private String fullName;
     private String email;
 
     @JsonIgnore // don't serialize password (sensitive information)
@@ -35,7 +34,6 @@ public class UserDetailsImpl implements UserDetails {
 
     public static UserDetailsImpl build(User user) {
         UUID id = user.getId();
-        String fullName = user.getFullName();
         String email = user.getEmail();
         String password = user.getPassword();
         Role role = user.getRole();
@@ -43,7 +41,7 @@ public class UserDetailsImpl implements UserDetails {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName().name());
         List<SimpleGrantedAuthority> authorities = List.of(authority);
 
-        return new UserDetailsImpl(id, fullName, email, password, authorities);
+        return new UserDetailsImpl(id, email, password, authorities);
     }
 
     @Override
