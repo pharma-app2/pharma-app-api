@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.pharma.app.pharmaappapi.security.models.Role;
 import org.pharma.app.pharmaappapi.security.models.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +16,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-@Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserDetailsImpl implements UserDetails {
@@ -24,6 +24,7 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     @EqualsAndHashCode.Include
+    @Getter
     private UUID id;
 
     private String email;
