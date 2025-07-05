@@ -7,22 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignUpPatientDTO {
-    public SignUpPatientDTO(String fullName, String email, String password, String passwordConfirmation, String cpf) {
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.passwordConfirmation = passwordConfirmation;
-        this.cpf = cpf;
-    }
-
-    private UUID id;
-
     @NotNull
     @NotBlank
     @Size(
