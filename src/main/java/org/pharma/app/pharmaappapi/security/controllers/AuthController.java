@@ -1,14 +1,12 @@
 package org.pharma.app.pharmaappapi.security.controllers;
 
 import jakarta.validation.Valid;
+import org.pharma.app.pharmaappapi.security.DTOs.SignInPatientDTO;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
 import org.pharma.app.pharmaappapi.security.services.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,5 +22,12 @@ public class AuthController {
         authService.signUpPatient(signUpDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
+
+    @PostMapping("/signin/patient")
+    public ResponseEntity<String> signInPatient(@RequestBody @Valid SignInPatientDTO signInPatientDTO) {
+        String message = authService.signInPatient(signInPatientDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 }

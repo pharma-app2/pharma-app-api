@@ -2,6 +2,7 @@ package org.pharma.app.pharmaappapi.security.services;
 
 import org.pharma.app.pharmaappapi.exceptions.ConflictAPIException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
+import org.pharma.app.pharmaappapi.security.DTOs.SignInPatientDTO;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
 import org.pharma.app.pharmaappapi.security.models.Patient;
 import org.pharma.app.pharmaappapi.security.models.Role;
@@ -9,16 +10,23 @@ import org.pharma.app.pharmaappapi.security.models.RoleName;
 import org.pharma.app.pharmaappapi.security.models.User;
 import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
 import org.pharma.app.pharmaappapi.security.repositories.RoleRepository;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthServiceImpl implements AuthService {
+    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final AuthRepository authRepository;
     private final RoleRepository roleRepository;
 
-    public AuthServiceImpl(PasswordEncoder passwordEncoder, AuthRepository authRepository, RoleRepository roleRepository) {
+    public AuthServiceImpl(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, AuthRepository authRepository, RoleRepository roleRepository) {
+        this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.authRepository = authRepository;
         this.roleRepository = roleRepository;
@@ -57,5 +65,20 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(role);
 
         authRepository.save(user);
+    }
+
+    @Override
+    public String signInPatient(SignInPatientDTO signInDTO) {
+        String email = signInDTO.getEmail();
+        String password = signInDTO.getPassword();
+
+        UsernamePasswordAuthenticationToken authorization = new UsernamePasswordAuthenticationToken(email, password);
+        Authentication authentication = authenticationManager.authenticate(authorization);
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+
+        return "Authentication name: " + authentication.getName();
     }
 }
