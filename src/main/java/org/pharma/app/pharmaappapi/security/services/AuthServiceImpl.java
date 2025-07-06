@@ -1,11 +1,13 @@
 package org.pharma.app.pharmaappapi.security.services;
 
+import org.modelmapper.ModelMapper;
 import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.exceptions.UnprocessableEntityException;
 import org.pharma.app.pharmaappapi.security.DTOs.LoginResponse;
 import org.pharma.app.pharmaappapi.security.DTOs.SignInPatientDTO;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
+import org.pharma.app.pharmaappapi.security.DTOs.UserInfoDTO;
 import org.pharma.app.pharmaappapi.security.jwt.JwtUtils;
 import org.pharma.app.pharmaappapi.security.models.Patient;
 import org.pharma.app.pharmaappapi.security.models.Role;
@@ -22,6 +24,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
@@ -29,13 +33,21 @@ public class AuthServiceImpl implements AuthService {
     private final AuthRepository authRepository;
     private final RoleRepository roleRepository;
     private final JwtUtils jwtUtils;
+    private final ModelMapper modelMapper;
 
-    public AuthServiceImpl(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, AuthRepository authRepository, RoleRepository roleRepository, JwtUtils jwtUtils) {
+    public AuthServiceImpl(AuthenticationManager authenticationManager,
+                           PasswordEncoder passwordEncoder,
+                           AuthRepository authRepository,
+                           RoleRepository roleRepository,
+                           JwtUtils jwtUtils,
+                           ModelMapper modelMapper
+    ) {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.authRepository = authRepository;
         this.roleRepository = roleRepository;
         this.jwtUtils = jwtUtils;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -88,13 +100,25 @@ public class AuthServiceImpl implements AuthService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookieFromUserDetails(userDetails);
 
-        String role = userDetails
+        String role = getRoleByUserDetails(userDetails);
+
+        return new LoginResponse(userDetails.getId(), userDetails.getUsername(), role, jwtCookie);
+    }
+
+    @Override
+    public UserInfoDTO getCurrentUserInfoByUserDetails(UserDetailsImpl userDetails) {
+        UUID userId = userDetails.getId();
+
+        User patient = authRepository.findUserPatientOrPharmacistById(userId);
+        return modelMapper.map(patient, UserInfoDTO.class);
+    }
+
+    private String getRoleByUserDetails(UserDetailsImpl userDetails) {
+        return userDetails
                 .getAuthorities()
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No role provided"))
                 .getAuthority();
-
-        return new LoginResponse(userDetails.getId(), userDetails.getUsername(), role, jwtCookie);
     }
 }

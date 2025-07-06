@@ -1,22 +1,20 @@
 package org.pharma.app.pharmaappapi.security.DTOs;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
-public sealed interface UserInfo permits PatientInfoDTO, PharmacistInfoDTO, UserInfoDTO {
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
+@Getter
+@Setter
+public class UserInfoDTO {
+    private String email;
+    private String fullName;
+    private String cpf;
+    private LocalDate birthday;
+    private String crf;
 }
-
-
-record UserInfoDTO(
-        String email,
-        LocalDate fullName
-) implements UserInfo {}
-
-record PatientInfoDTO(
-        String cpf,
-        LocalDate birthday
-) implements UserInfo {}
-
-record PharmacistInfoDTO(
-        String crf
-) implements UserInfo {}

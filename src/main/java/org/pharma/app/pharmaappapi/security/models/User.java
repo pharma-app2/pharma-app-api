@@ -5,9 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -22,9 +20,12 @@ import java.util.UUID;
                         name = "uk_user_email"
                 )
         })
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString
 public class User {
     public User(String fullName, String email, String password) {
         this.fullName = fullName;
@@ -36,6 +37,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     @JdbcTypeCode(SqlTypes.UUID) // Hint for Hibernate to use native UUID type from database, if available
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @NotNull
@@ -77,9 +79,10 @@ public class User {
     an object role inside User is a non-existent Role instance. Otherwise, if a developer
     do user.setRole(new Role("ROLE_SUPER_ADMIN")) and save the user, JPA would try to
     create this new role in db - we don't want that.
-     */
+    */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
+    @ToString.Exclude // exclude lazy initializations (because when toString() calls getRole() at an User instance, the JPA session is already closed due to lazy initialization. It leads to a LazyInitializationException)
     private Role role;
 
     @OneToOne(mappedBy = "user", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)

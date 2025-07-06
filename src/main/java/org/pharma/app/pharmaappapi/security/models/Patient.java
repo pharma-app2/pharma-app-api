@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -23,9 +21,12 @@ import java.util.UUID;
                         name = "uk_patient_cpf"
                 )
         })
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString
 public class Patient {
     public Patient(String cpf) {
         this.cpf = cpf;
@@ -35,6 +36,7 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     @JdbcTypeCode(SqlTypes.UUID) // Hint for Hibernate to use native UUID type from database, if available
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @NotNull
@@ -53,5 +55,6 @@ public class Patient {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
+    @ToString.Exclude // exclude lazy initializations (because when toString() calls getPatient() at an User instance, the JPA session is already closed due to lazy initialization. It leads to a LazyInitializationException)
     private User user;
 }
