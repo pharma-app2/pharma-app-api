@@ -2,6 +2,7 @@ package org.pharma.app.pharmaappapi.security.services;
 
 import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
+import org.pharma.app.pharmaappapi.exceptions.UnprocessableEntityException;
 import org.pharma.app.pharmaappapi.security.DTOs.LoginResponse;
 import org.pharma.app.pharmaappapi.security.DTOs.SignInPatientDTO;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
@@ -56,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (!password.equals(passwordConfirmation)) {
-            throw new ConflictException("Password and password confirmation don't match.");
+            throw new UnprocessableEntityException("Password and password confirmation don't match.");
         }
 
         String encodedPassword = passwordEncoder.encode(password);

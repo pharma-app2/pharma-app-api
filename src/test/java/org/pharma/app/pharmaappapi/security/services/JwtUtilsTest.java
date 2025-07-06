@@ -3,6 +3,8 @@ package org.pharma.app.pharmaappapi.security.services;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.InvalidClaimException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Spy;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pharma.app.pharmaappapi.security.DTOs.JwtPayloadPatientDTO;
 import org.pharma.app.pharmaappapi.security.jwt.JwtUtils;
@@ -20,7 +22,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
-import java.lang.reflect.Field;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Date;
@@ -36,11 +37,6 @@ import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
 class JwtUtilsTest {
-
-    @Spy // instead of using a mocked value (@Mock), use a real object but the capacity of mocking some of its methods
-    // Usamos @Spy em JwtUtils porque queremos executar a lógica real de generateJwtCookieFromUserDetails, mas queremos
-    // interceptar e controlar a chamada para buildJwt dentro da mesma classe. Um @Mock substituiria todas as
-    // implementações de metodo.
     private JwtUtils jwtUtils;
 
     @Mock
@@ -48,7 +44,7 @@ class JwtUtilsTest {
 
     private final String jwtCookieName = "jwt-cookie";
     private final Long expTime = 5 * 60 * 60 * 1000L;
-    private SecretKey testKey;;
+    private SecretKey testKey;
     private final String testIssuer = "test-issuer";
     private final String testAudience = "test-audience";
     private final String testKeyId = "test-key-id-123";
@@ -57,38 +53,28 @@ class JwtUtilsTest {
 
     @BeforeEach
     void setUp() {
-        // Injeta os valores de configuração no nosso objeto espião antes de cada teste.
-        // Isso é feito usando reflexão para este exemplo, mas em um app real seria com @Value.
-        try {
-            Field cookieNameField = JwtUtils.class.getDeclaredField("jwtCookieName");
-            cookieNameField.setAccessible(true);
-            cookieNameField.set(jwtUtils, jwtCookieName);
+        // 1. A NOSSA "FONTE DA VERDADE" EM FORMATO STRING (BASE64)
+        // Esta é a string que simula o que está no seu application.properties
+        String validBase64Secret = "B3k/v+g8L2pW8yZ4xT6qR7sU9vA+cE1dF0hG2iJ3kL4="; // Exemplo!
 
-            Field expTimeField = JwtUtils.class.getDeclaredField("jwtExpTime");
-            expTimeField.setAccessible(true);
-            expTimeField.set(jwtUtils, expTime);
+        // 2. CRIAMOS O OBJETO SecretKey A PARTIR DA STRING
+        // Este objeto 'testKey' será usado para assinar nossos tokens de teste.
+        byte[] keyBytes = Decoders.BASE64.decode(validBase64Secret);
+        this.testKey = Keys.hmacShaKeyFor(keyBytes);
 
-            // Gera uma chave segura para cada teste
-            testKey = Jwts.SIG.HS256.key().build();
+        // 2. Crie uma instância REAL da sua classe usando o construtor
+        // que recebe os valores de configuração. Isso simula o que o Spring faz.
+        JwtUtils realJwtUtils = new JwtUtils(
+                testKeyId,
+                testIssuer,
+                testAudience,
+                jwtCookieName,
+                expTime,
+                validBase64Secret
+        );
 
-            // Injeta os valores de teste no nosso objeto espião.
-            // Em um app real, isso seria feito com @Value e um construtor.
-            // Aqui usamos reflexão para simular essa injeção para o teste.
-            setField(jwtUtils, "jwtKey", testKey);
-            setField(jwtUtils, "jwtIssuer", testIssuer);
-            setField(jwtUtils, "jwtAudience", testAudience);
-            setField(jwtUtils, "jwtKeyId", testKeyId);
-            setField(jwtUtils, "jwtExpTime", testExpTimeMs);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Método auxiliar para injetar valores nos campos privados para o teste
-    private void setField(Object target, String fieldName, Object value) throws Exception {
-        java.lang.reflect.Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, value);
+        // 3. Crie o SPY a partir do objeto real que você acabou de criar.
+        this.jwtUtils = Mockito.spy(realJwtUtils);
     }
 
     // ********** METHOD: validateAndParseClaims **********

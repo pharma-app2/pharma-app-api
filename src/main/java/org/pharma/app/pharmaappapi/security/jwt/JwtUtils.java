@@ -20,7 +20,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
-@NoArgsConstructor // it makes @Value() works
+//@NoArgsConstructor // it makes @Value() works
 public class JwtUtils {
     private SecretKey jwtKey;
     private String jwtKeyId;
