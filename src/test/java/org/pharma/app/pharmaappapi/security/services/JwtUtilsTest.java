@@ -47,14 +47,14 @@ class JwtUtilsTest {
     private HttpServletRequest mockRequest;
 
     // TODO: move to secure place
-    private String jwtCookieName = "jwt-cookie";
-    private Long expTime = 5 * 60 * 60 * 1000L;
+    private final String jwtCookieName = "jwt-cookie";
+    private final Long expTime = 5 * 60 * 60 * 1000L;
     private SecretKey testKey;;
-    private String testIssuer = "test-issuer";
-    private String testAudience = "test-audience";
-    private String testKeyId = "test-key-id-123";
-    private long testExpTimeMs = 5 * 3600 * 1000;
-    private String testSubject = "user@test.com";
+    private final String testIssuer = "test-issuer";
+    private final String testAudience = "test-audience";
+    private final String testKeyId = "test-key-id-123";
+    private final long testExpTimeMs = 5 * 3600 * 1000;
+    private final String testSubject = "user@test.com";
 
     @BeforeEach
     void setUp() {
@@ -65,7 +65,7 @@ class JwtUtilsTest {
             cookieNameField.setAccessible(true);
             cookieNameField.set(jwtUtils, jwtCookieName);
 
-            Field expTimeField = JwtUtils.class.getDeclaredField("expTime");
+            Field expTimeField = JwtUtils.class.getDeclaredField("jwtExpTime");
             expTimeField.setAccessible(true);
             expTimeField.set(jwtUtils, expTime);
 
@@ -75,11 +75,11 @@ class JwtUtilsTest {
             // Injeta os valores de teste no nosso objeto espião.
             // Em um app real, isso seria feito com @Value e um construtor.
             // Aqui usamos reflexão para simular essa injeção para o teste.
-            setField(jwtUtils, "key", testKey);
-            setField(jwtUtils, "issuer", testIssuer);
-            setField(jwtUtils, "aud", testAudience);
-            setField(jwtUtils, "keyId", testKeyId);
-            setField(jwtUtils, "expTime", testExpTimeMs);
+            setField(jwtUtils, "jwtKey", testKey);
+            setField(jwtUtils, "jwtIssuer", testIssuer);
+            setField(jwtUtils, "jwtAudience", testAudience);
+            setField(jwtUtils, "jwtKeyId", testKeyId);
+            setField(jwtUtils, "jwtExpTime", testExpTimeMs);
         } catch (Exception e) {
             e.printStackTrace();
         }
