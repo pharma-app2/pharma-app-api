@@ -41,8 +41,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
     }
 
-    @ExceptionHandler(ConflictAPIException.class)
-    public ResponseEntity<APIExceptionResponse> customConflictAPIException(ConflictAPIException e) {
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<APIExceptionResponse> customConflictAPIException(ConflictException e) {
         String message = e.getMessage();
         Integer statusCode = HttpStatus.CONFLICT.value();
         APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
@@ -66,5 +66,14 @@ public class GlobalExceptionHandler {
         APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+
+    @ExceptionHandler(UnprocessableEntityException.class)
+    public ResponseEntity<APIExceptionResponse> customUnprocessableEntityException(UnprocessableEntityException e) {
+        String message = e.getMessage();
+        Integer statusCode = HttpStatus.UNPROCESSABLE_ENTITY.value();
+        APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(apiResponse);
     }
 }

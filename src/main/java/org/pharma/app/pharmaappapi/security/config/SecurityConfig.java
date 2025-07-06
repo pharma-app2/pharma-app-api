@@ -39,7 +39,7 @@ public class SecurityConfig {
         http.exceptionHandling(e -> e.authenticationEntryPoint(customAuthEntryPoint));
 
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/api/auth/**").permitAll();
+            auth.requestMatchers("/api/auth/**").anonymous();
             auth.requestMatchers("/api/public/**").permitAll();
 
             auth.anyRequest().authenticated();

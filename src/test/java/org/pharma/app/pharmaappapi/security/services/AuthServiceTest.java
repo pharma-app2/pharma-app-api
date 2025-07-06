@@ -6,16 +6,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.pharma.app.pharmaappapi.exceptions.ConflictAPIException;
+import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
+import org.pharma.app.pharmaappapi.exceptions.UnprocessableEntityException;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
-import org.pharma.app.pharmaappapi.security.config.SecurityConfig;
 import org.pharma.app.pharmaappapi.security.models.Role;
 import org.pharma.app.pharmaappapi.security.models.RoleName;
 import org.pharma.app.pharmaappapi.security.models.User;
 import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
 import org.pharma.app.pharmaappapi.security.repositories.RoleRepository;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -118,7 +117,7 @@ class AuthServiceTest {
         when(authRepository.existsByPatient_CpfAndRole_Name(signUpDTO.getCpf(), RoleName.ROLE_PATIENT)).thenReturn(false);
         when(authRepository.existsByEmailAndRole_Name(signUpDTO.getEmail(), RoleName.ROLE_PATIENT)).thenReturn(false);
 
-        assertThrows(ConflictAPIException.class, () -> authService.signUpPatient(signUpDTO));
+        assertThrows(UnprocessableEntityException.class, () -> authService.signUpPatient(signUpDTO));
 
         // Verify if save method was never called (because exception was thrown before it)
         verify(authRepository, never()).save(any(User.class));

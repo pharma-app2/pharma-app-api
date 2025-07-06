@@ -1,12 +1,16 @@
 package org.pharma.app.pharmaappapi.security.jwt;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.NoArgsConstructor;
 import org.pharma.app.pharmaappapi.security.DTOs.JwtPayloadPatientDTO;
 import org.pharma.app.pharmaappapi.security.models.RoleName;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -16,21 +20,39 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
+//@NoArgsConstructor // it makes @Value() works
 public class JwtUtils {
-    // TODO: change to a secure place for production
-    private static SecretKey key = Jwts.SIG.HS256.key().build();
-    private static String keyId = "pharma-app-key-1";
-    private static String issuer = "pharma-app-api";
-    private static String aud = "pharma-app-aud";
-    private static String jwtCookieName = "jwt-cookie";
-    private static Long expTime = 5 * 60 * 60 * 1000L;
+    private SecretKey jwtKey;
+    private String jwtKeyId;
+    private String jwtIssuer;
+    private String jwtAudience;
+    private String jwtCookieName;
+    private Long jwtExpTime;
+
+    public JwtUtils(
+            @Value("${app.jwtKeyId}") String jwtKeyId,
+            @Value("${app.jwtIssuer}") String jwtIssuer,
+            @Value("${app.jwtAudience}") String jwtAudience,
+            @Value("${app.jwtCookieName}") String jwtCookieName,
+            @Value("${app.jwtExpTime}") Long jwtExpTime,
+            @Value("${app.jwtSecret}") String jwtKey
+    ) {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtKey);
+        this.jwtKey = Keys.hmacShaKeyFor(keyBytes);
+
+        this.jwtKeyId = jwtKeyId;
+        this.jwtAudience = jwtAudience;
+        this.jwtCookieName = jwtCookieName;
+        this.jwtExpTime = jwtExpTime;
+        this.jwtIssuer = jwtIssuer;
+    }
 
     public Claims validateAndParseClaims(String token) {
         try {
             JwtParser parser = Jwts.parser()
-                    .verifyWith(key)
-                    .requireIssuer(issuer)
-                    .requireAudience(aud)
+                    .verifyWith(jwtKey)
+                    .requireIssuer(jwtIssuer)
+                    .requireAudience(jwtAudience)
                     .build();
 
             return parser.parseSignedClaims(token).getPayload();
@@ -59,24 +81,24 @@ public class JwtUtils {
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
         // TODO: change exp to a secure place
-        long expMillis = nowMillis + expTime;
+        long expMillis = nowMillis + jwtExpTime;
         Date expirationDate = new Date(expMillis);
 
         return Jwts.builder()
                 .header()
-                .keyId(keyId)
+                .keyId(jwtKeyId)
                 .and()
                 .subject(payload.email())
-                .issuer(issuer) // (Opcional) Quem emitiu o token
+                .issuer(jwtIssuer) // (Opcional) Quem emitiu o token
                 .issuedAt(now) // Data de emissão
-                .audience().add(aud)
+                .audience().add(jwtAudience)
                 .and()
                 .expiration(expirationDate)
 
                 .claim("id", payload.id())
                 .claim("role", payload.role())
 
-                .signWith(key)
+                .signWith(jwtKey)
 
                 .compact();
     }
@@ -98,7 +120,7 @@ public class JwtUtils {
 
         return ResponseCookie.from(jwtCookieName, jwtToken)
                 .path("/api")
-                .maxAge(expTime)
+                .maxAge(jwtExpTime)
                 .httpOnly(false) // allow js access
                 .build();
     }
