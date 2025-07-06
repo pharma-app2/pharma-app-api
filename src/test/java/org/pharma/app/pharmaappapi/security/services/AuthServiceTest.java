@@ -6,7 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.pharma.app.pharmaappapi.exceptions.ConflictAPIException;
+import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
 import org.pharma.app.pharmaappapi.security.models.Role;
@@ -116,7 +116,7 @@ class AuthServiceTest {
         when(authRepository.existsByPatient_CpfAndRole_Name(signUpDTO.getCpf(), RoleName.ROLE_PATIENT)).thenReturn(false);
         when(authRepository.existsByEmailAndRole_Name(signUpDTO.getEmail(), RoleName.ROLE_PATIENT)).thenReturn(false);
 
-        assertThrows(ConflictAPIException.class, () -> authService.signUpPatient(signUpDTO));
+        assertThrows(ConflictException.class, () -> authService.signUpPatient(signUpDTO));
 
         // Verify if save method was never called (because exception was thrown before it)
         verify(authRepository, never()).save(any(User.class));

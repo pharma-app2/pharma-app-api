@@ -46,7 +46,6 @@ class JwtUtilsTest {
     @Mock
     private HttpServletRequest mockRequest;
 
-    // TODO: move to secure place
     private final String jwtCookieName = "jwt-cookie";
     private final Long expTime = 5 * 60 * 60 * 1000L;
     private SecretKey testKey;;
