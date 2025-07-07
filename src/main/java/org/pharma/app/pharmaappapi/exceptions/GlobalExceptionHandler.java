@@ -1,5 +1,9 @@
 package org.pharma.app.pharmaappapi.exceptions;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.InvalidClaimException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.validation.ConstraintViolationException;
 import org.pharma.app.pharmaappapi.payloads.responseDTOs.APIExceptionResponse;
 import org.springframework.http.HttpStatus;
@@ -9,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,5 +80,18 @@ public class GlobalExceptionHandler {
         APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(apiResponse);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, String>> handleJwtExceptions(RuntimeException e) {
+        if (!(e.getCause() instanceof ExpiredJwtException) && !(e.getCause() instanceof UnsupportedJwtException) && !(e.getCause() instanceof MalformedJwtException) && !(e.getCause() instanceof SignatureException) && !(e.getCause() instanceof IllegalArgumentException)) {
+            e.getCause();
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Unexpected JWT Exception", "message", e.getMessage()));
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid Token", "message", e.getMessage()));
     }
 }

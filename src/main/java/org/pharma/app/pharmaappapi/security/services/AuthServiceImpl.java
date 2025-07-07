@@ -1,7 +1,6 @@
 package org.pharma.app.pharmaappapi.security.services;
 
 import org.modelmapper.ModelMapper;
-import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.exceptions.UnprocessableEntityException;
 import org.pharma.app.pharmaappapi.security.DTOs.LoginResponse;
@@ -64,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
         if (patientExistsByCpf) {
             throw new ResourceAlreadyExistsException("Patient", "cpf", cpf);
         }
+
         if (patientExistsByEmail) {
             throw new ResourceAlreadyExistsException("Patient", "email", email);
         }
@@ -79,6 +79,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPatient(patient);
         patient.setUser(user);
 
+        // We won't create a Role instance (like we did with Patient) because it would create a new Role - we don't want that
         Role role = roleRepository.findFirstByName(RoleName.ROLE_PATIENT);
         user.setRole(role);
 
@@ -111,6 +112,11 @@ public class AuthServiceImpl implements AuthService {
 
         User patient = authRepository.findUserPatientOrPharmacistById(userId);
         return modelMapper.map(patient, UserInfoDTO.class);
+    }
+
+    @Override
+    public ResponseCookie getCleanJwtCookie() {
+        return jwtUtils.getCleanJwtCookie();
     }
 
     private String getRoleByUserDetails(UserDetailsImpl userDetails) {

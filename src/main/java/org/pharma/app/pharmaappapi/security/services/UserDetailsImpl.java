@@ -37,7 +37,7 @@ public class UserDetailsImpl implements UserDetails {
         UUID id = user.getId();
         String email = user.getEmail();
         String password = user.getPassword();
-        Role role = user.getRole();
+        Role role = user.getRole(); // we need a transactional operation here (Role from User is LAZY)
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName().name());
         List<SimpleGrantedAuthority> authorities = List.of(authority);

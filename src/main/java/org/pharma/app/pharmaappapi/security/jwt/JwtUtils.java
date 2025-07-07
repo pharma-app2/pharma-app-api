@@ -6,7 +6,6 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.NoArgsConstructor;
 import org.pharma.app.pharmaappapi.security.DTOs.JwtPayloadPatientDTO;
 import org.pharma.app.pharmaappapi.security.models.RoleName;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
@@ -20,7 +19,6 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
-//@NoArgsConstructor // it makes @Value() works
 public class JwtUtils {
     private SecretKey jwtKey;
     private String jwtKeyId;
@@ -129,5 +127,11 @@ public class JwtUtils {
         Cookie cookie = WebUtils.getCookie(request, jwtCookieName);
 
         return cookie == null ? null : cookie.getValue();
+    }
+
+    public ResponseCookie getCleanJwtCookie() {
+        return ResponseCookie.from(jwtCookieName, null)
+                .path("/api")
+                .build();
     }
 }

@@ -2,9 +2,12 @@ package org.pharma.app.pharmaappapi.security.config;
 
 import org.pharma.app.pharmaappapi.security.exceptions.CustomAuthEntryPoint;
 import org.pharma.app.pharmaappapi.security.jwt.AuthTokenJwtFilter;
+import org.pharma.app.pharmaappapi.security.jwt.ExceptionHandlerFilter;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -40,20 +43,49 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> {
             auth.requestMatchers("/api/auth/**").anonymous();
+
+            // Documentation
+            auth.requestMatchers(
+                    "/favicon.ico",
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+            ).permitAll();
+
+            // Public endpoints
             auth.requestMatchers("/api/public/**").permitAll();
+            auth.requestMatchers("/error").permitAll();
+
+            auth.requestMatchers(
+                    "/api/test/**",
+                    "/images/**",
+                    "/h2-console/**",
+                    "/webjars/**"
+            ).permitAll();
 
             auth.anyRequest().authenticated();
         });
 
         http.authenticationProvider(authenticationProvider());
+
         http.addFilterBefore(authTokenJwtFilterBean(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(exceptionHandlerFilterBean(), AuthTokenJwtFilter.class);
 
         return http.build();
     }
 
     @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE + 1)
     public AuthTokenJwtFilter authTokenJwtFilterBean() {
         return new AuthTokenJwtFilter();
+    }
+
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public ExceptionHandlerFilter exceptionHandlerFilterBean() {
+        return new ExceptionHandlerFilter();
     }
 
     @Bean
