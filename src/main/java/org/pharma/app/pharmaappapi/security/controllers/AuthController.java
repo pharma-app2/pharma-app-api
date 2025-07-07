@@ -2,9 +2,9 @@ package org.pharma.app.pharmaappapi.security.controllers;
 
 import jakarta.validation.Valid;
 import org.pharma.app.pharmaappapi.security.DTOs.LoginResponse;
-import org.pharma.app.pharmaappapi.security.DTOs.UserInfoDTO;
 import org.pharma.app.pharmaappapi.security.DTOs.SignInPatientDTO;
 import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
+import org.pharma.app.pharmaappapi.security.DTOs.UserInfoDTO;
 import org.pharma.app.pharmaappapi.security.services.AuthService;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.springframework.http.HttpHeaders;
@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -31,6 +29,7 @@ public class AuthController {
         UserInfoDTO currentUserInfo = authService.getCurrentUserInfoByUserDetails(userDetails);
         return ResponseEntity.status(HttpStatus.OK).body(currentUserInfo);
     }
+
 
     @PostMapping("/auth/signup/patient")
     public ResponseEntity<?> signUpPatient(@RequestBody @Valid SignUpPatientDTO signUpDTO) {

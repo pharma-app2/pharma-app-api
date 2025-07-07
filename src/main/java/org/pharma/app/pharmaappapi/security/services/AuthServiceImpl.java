@@ -64,6 +64,7 @@ public class AuthServiceImpl implements AuthService {
         if (patientExistsByCpf) {
             throw new ResourceAlreadyExistsException("Patient", "cpf", cpf);
         }
+
         if (patientExistsByEmail) {
             throw new ResourceAlreadyExistsException("Patient", "email", email);
         }
@@ -79,6 +80,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPatient(patient);
         patient.setUser(user);
 
+        // We won't create a Role instance (like we did with Patient) because it would create a new Role - we don't want that
         Role role = roleRepository.findFirstByName(RoleName.ROLE_PATIENT);
         user.setRole(role);
 
