@@ -1,7 +1,6 @@
 package org.pharma.app.pharmaappapi.security.services;
 
 import org.modelmapper.ModelMapper;
-import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.exceptions.UnprocessableEntityException;
 import org.pharma.app.pharmaappapi.security.DTOs.LoginResponse;
@@ -113,6 +112,11 @@ public class AuthServiceImpl implements AuthService {
 
         User patient = authRepository.findUserPatientOrPharmacistById(userId);
         return modelMapper.map(patient, UserInfoDTO.class);
+    }
+
+    @Override
+    public ResponseCookie getCleanJwtCookie() {
+        return jwtUtils.getCleanJwtCookie();
     }
 
     private String getRoleByUserDetails(UserDetailsImpl userDetails) {

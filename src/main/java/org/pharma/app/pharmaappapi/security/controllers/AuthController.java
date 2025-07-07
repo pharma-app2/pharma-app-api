@@ -9,6 +9,7 @@ import org.pharma.app.pharmaappapi.security.services.AuthService;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -46,5 +47,15 @@ public class AuthController {
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, response.jwtCookie().toString())
                 .body(response);
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> signOutUser() {
+        ResponseCookie cleanJwtCookie = authService.getCleanJwtCookie();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, cleanJwtCookie.toString())
+                .body(null);
     }
 }
