@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.pharma.app.pharmaappapi.models.appointments.Appointment;
 import org.pharma.app.pharmaappapi.models.healthPlans.HealthPlan;
 
 import java.util.HashSet;
@@ -95,4 +96,7 @@ public class Pharmacist {
             )
     )
     private Set<Patient> patients = new HashSet<>();
+
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private Set<Appointment> appointments = new HashSet<>();
 }

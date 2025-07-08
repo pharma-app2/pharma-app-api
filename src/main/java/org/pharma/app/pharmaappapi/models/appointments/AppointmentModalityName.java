@@ -1,4 +1,6 @@
 package org.pharma.app.pharmaappapi.models.appointments;
 
-public class AppointmentModalityName {
+public enum AppointmentModalityName {
+    PRESENCIAL,
+    TELECONSULTA
 }
