@@ -3,26 +3,25 @@ package org.pharma.app.pharmaappapi.security.services;
 import org.modelmapper.ModelMapper;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.exceptions.UnprocessableEntityException;
-import org.pharma.app.pharmaappapi.security.DTOs.LoginResponse;
-import org.pharma.app.pharmaappapi.security.DTOs.SignInPatientDTO;
-import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
-import org.pharma.app.pharmaappapi.security.DTOs.UserInfoDTO;
+import org.pharma.app.pharmaappapi.security.DTOs.*;
 import org.pharma.app.pharmaappapi.security.jwt.JwtUtils;
-import org.pharma.app.pharmaappapi.security.models.users.Patient;
-import org.pharma.app.pharmaappapi.security.models.users.Role;
-import org.pharma.app.pharmaappapi.security.models.users.RoleName;
-import org.pharma.app.pharmaappapi.security.models.users.User;
+import org.pharma.app.pharmaappapi.security.models.users.*;
 import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
 import org.pharma.app.pharmaappapi.security.repositories.RoleRepository;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -86,10 +85,33 @@ public class AuthServiceImpl implements AuthService {
         authRepository.save(user);
     }
 
+    // TODO: THIS IS A TEMPORARY METHOD - PHARMACIST WILL HAVE ITS OWN API FOR SIGN UP IN FUTURE
     @Override
-    public LoginResponse signInPatient(SignInPatientDTO signInDTO) {
+    public void signUpPharmacist(SignUpPharmacistDTO signUpDTO) {
+        String fullName = signUpDTO.getFullName();
+        String email = signUpDTO.getEmail();
+        String password = signUpDTO.getPassword();
+        String cpf = signUpDTO.getCrf();
+
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = new User(fullName, email, encodedPassword);
+
+        Pharmacist pharmacist = new Pharmacist(cpf);
+        user.setPharmacist(pharmacist);
+        pharmacist.setUser(user);
+
+        // We won't create a Role instance (like we did with Patient) because it would create a new Role - we don't want that
+        Role role = roleRepository.findFirstByName(RoleName.ROLE_PHARMACIST);
+        user.setRole(role);
+
+        authRepository.save(user);
+    }
+
+    @Override
+    public LoginResponse signInUser(SignInDTO signInDTO, RoleName roleName) {
         String email = signInDTO.getEmail();
         String password = signInDTO.getPassword();
+        Collection<? extends GrantedAuthority> authorities = getAuthoritiesByRole(roleName);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -126,5 +148,9 @@ public class AuthServiceImpl implements AuthService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No role provided"))
                 .getAuthority();
+    }
+
+    private Collection<? extends GrantedAuthority> getAuthoritiesByRole(RoleName roleName) {
+        return List.of(new SimpleGrantedAuthority(roleName.name()));
     }
 }

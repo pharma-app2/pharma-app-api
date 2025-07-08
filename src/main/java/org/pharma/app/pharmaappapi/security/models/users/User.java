@@ -87,4 +87,7 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
     private Patient patient;
+
+    @OneToOne(mappedBy = "user", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
+    private Pharmacist pharmacist;
 }
