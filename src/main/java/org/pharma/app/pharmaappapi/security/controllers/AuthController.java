@@ -1,10 +1,8 @@
 package org.pharma.app.pharmaappapi.security.controllers;
 
 import jakarta.validation.Valid;
-import org.pharma.app.pharmaappapi.security.DTOs.LoginResponse;
-import org.pharma.app.pharmaappapi.security.DTOs.SignInPatientDTO;
-import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
-import org.pharma.app.pharmaappapi.security.DTOs.UserInfoDTO;
+import org.pharma.app.pharmaappapi.security.DTOs.*;
+import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.pharma.app.pharmaappapi.security.services.AuthService;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.springframework.http.HttpHeaders;
@@ -40,13 +38,30 @@ public class AuthController {
     }
 
     @PostMapping("/auth/signin/patient")
-    public ResponseEntity<LoginResponse> signInPatient(@RequestBody @Valid SignInPatientDTO signInPatientDTO) {
-        LoginResponse response = authService.signInPatient(signInPatientDTO);
+    public ResponseEntity<LoginResponse> signInPatient(@RequestBody @Valid SignInDTO signInDTO) {
+        LoginResponse response = authService.signInUser(signInDTO, RoleName.ROLE_PATIENT);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, response.jwtCookie().toString())
                 .body(response);
+    }
+
+    @PostMapping("/auth/signin/pharmacist")
+    public ResponseEntity<LoginResponse> signInPharmacist(@RequestBody @Valid SignInDTO signInDTO) {
+        LoginResponse response = authService.signInUser(signInDTO, RoleName.ROLE_PHARMACIST);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, response.jwtCookie().toString())
+                .body(response);
+    }
+
+    @PostMapping("/auth/signup/pharmacist")
+    public ResponseEntity<?> signUpPharmacist(@RequestBody @Valid SignUpPharmacistDTO signUpDTO) {
+        authService.signUpPharmacist(signUpDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
     @PostMapping("/signout")

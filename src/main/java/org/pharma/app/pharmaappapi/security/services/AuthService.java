@@ -1,16 +1,13 @@
 package org.pharma.app.pharmaappapi.security.services;
 
-import org.pharma.app.pharmaappapi.security.DTOs.LoginResponse;
-import org.pharma.app.pharmaappapi.security.DTOs.SignInPatientDTO;
-import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
-import org.pharma.app.pharmaappapi.security.DTOs.UserInfoDTO;
+import org.pharma.app.pharmaappapi.security.DTOs.*;
+import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.springframework.http.ResponseCookie;
-
-import java.util.UUID;
 
 public interface AuthService {
     void signUpPatient(SignUpPatientDTO signUpDTO);
-    LoginResponse signInPatient(SignInPatientDTO signInDTO);
+    void signUpPharmacist(SignUpPharmacistDTO signUpDTO);
+    LoginResponse signInUser(SignInDTO signInDTO, RoleName roleName);
     UserInfoDTO getCurrentUserInfoByUserDetails(UserDetailsImpl userDetails);
     ResponseCookie getCleanJwtCookie();
 }

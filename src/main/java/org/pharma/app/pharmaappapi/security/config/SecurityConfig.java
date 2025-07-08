@@ -3,6 +3,7 @@ package org.pharma.app.pharmaappapi.security.config;
 import org.pharma.app.pharmaappapi.security.exceptions.CustomAuthEntryPoint;
 import org.pharma.app.pharmaappapi.security.jwt.AuthTokenJwtFilter;
 import org.pharma.app.pharmaappapi.security.jwt.ExceptionHandlerFilter;
+import org.pharma.app.pharmaappapi.security.services.RoleAuthenticationProvider;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -94,10 +95,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
+    public RoleAuthenticationProvider authenticationProvider() {
+        return new RoleAuthenticationProvider();
     }
 
     @Bean

@@ -16,10 +16,12 @@ public interface AuthRepository extends JpaRepository<User, UUID> {
 
     @Query(
             nativeQuery = true,
-            value = "SELECT u.*, r.name FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.email = :emailPlaceholder"
+            value = "SELECT u.*, r.name FROM users u " +
+                    "INNER JOIN roles r ON u.role_id = r.id " +
+                    "WHERE u.email = :emailPlaceholder AND r.name = :rolePlaceholder"
     )
     // We explicitly bring roles table (because we build our entity with Lazy initialization - see User model)
-    User findFirstByEmail(@Param("emailPlaceholder") String email);
+    User findFirstByEmail(@Param("emailPlaceholder") String email, @Param("rolePlaceholder") String role);
 
     User findUserPatientOrPharmacistById(UUID id);
 }

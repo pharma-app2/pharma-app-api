@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
+import org.pharma.app.pharmaappapi.security.models.users.Role;
 
 import java.util.HashSet;
 import java.util.Set;
