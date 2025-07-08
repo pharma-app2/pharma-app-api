@@ -62,14 +62,12 @@ public class Pharmacist {
             joinColumns = @JoinColumn(
                     name = "pharmacist_id",
                     referencedColumnName = "id",
-                    nullable = false,
-                    updatable = false
+                    nullable = false
             ),
             inverseJoinColumns = @JoinColumn(
                     name = "health_plan_id",
                     referencedColumnName = "id",
-                    nullable = false,
-                    updatable = false
+                    nullable = false
             ),
             uniqueConstraints = @UniqueConstraint(
                     name = "uk_pharmacist_health_plan_association",
@@ -77,4 +75,24 @@ public class Pharmacist {
             )
     )
     private Set<HealthPlan> healthPlans = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "patients_pharmacists",
+            joinColumns = @JoinColumn(
+                    name = "pharmacist_id",
+                    referencedColumnName = "id",
+                    nullable = false
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "patient_id",
+                    referencedColumnName = "id",
+                    nullable = false
+            ),
+            uniqueConstraints = @UniqueConstraint(
+                    name = "uk_pharmacist_patient_association",
+                    columnNames = { "pharmacist_id", "patient_id" }
+            )
+    )
+    private Set<Patient> patients = new HashSet<>();
 }

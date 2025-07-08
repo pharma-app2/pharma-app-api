@@ -15,11 +15,8 @@ CREATE TABLE IF NOT EXISTS health_plans_pharmacists (
     PRIMARY KEY (pharmacist_id, health_plan_id),
 
     -- Constraints de chave estrangeira
-    CONSTRAINT fk_assoc_pharmacists
-        FOREIGN KEY (pharmacist_id) REFERENCES pharmacists(id) ON DELETE CASCADE,
-
-    CONSTRAINT fk_assoc_health_plans
-        FOREIGN KEY (health_plan_id) REFERENCES health_plans(id) ON DELETE CASCADE
+    CONSTRAINT fk_assoc_pharmacists FOREIGN KEY (pharmacist_id) REFERENCES pharmacists(id) ON DELETE CASCADE,
+    CONSTRAINT fk_assoc_health_plans FOREIGN KEY (health_plan_id) REFERENCES health_plans(id) ON DELETE CASCADE
 );
 
 -- Trigger para atualizar 'updated_at' na tabela de associação
