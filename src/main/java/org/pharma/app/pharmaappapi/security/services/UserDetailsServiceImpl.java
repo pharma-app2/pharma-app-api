@@ -1,6 +1,6 @@
 package org.pharma.app.pharmaappapi.security.services;
 
-import org.pharma.app.pharmaappapi.security.models.User;
+import org.pharma.app.pharmaappapi.security.models.users.User;
 import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

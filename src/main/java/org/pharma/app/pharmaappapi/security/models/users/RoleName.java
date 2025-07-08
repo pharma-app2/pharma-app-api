@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.security.models;
+package org.pharma.app.pharmaappapi.security.models.users;
 
 public enum RoleName {
     ROLE_PATIENT,

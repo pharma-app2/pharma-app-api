@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.security.models;
+package org.pharma.app.pharmaappapi.security.models.users;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -9,7 +9,6 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity

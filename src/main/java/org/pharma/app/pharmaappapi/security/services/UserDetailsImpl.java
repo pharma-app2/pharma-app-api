@@ -2,11 +2,10 @@ package org.pharma.app.pharmaappapi.security.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.pharma.app.pharmaappapi.security.models.Role;
-import org.pharma.app.pharmaappapi.security.models.User;
+import org.pharma.app.pharmaappapi.security.models.users.Role;
+import org.pharma.app.pharmaappapi.security.models.users.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

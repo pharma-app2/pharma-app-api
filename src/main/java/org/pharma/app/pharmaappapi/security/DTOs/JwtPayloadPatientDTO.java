@@ -1,6 +1,6 @@
 package org.pharma.app.pharmaappapi.security.DTOs;
 
-import org.pharma.app.pharmaappapi.security.models.RoleName;
+import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 
 import java.util.UUID;
 
