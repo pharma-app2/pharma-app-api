@@ -10,6 +10,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -57,4 +59,8 @@ public class Patient {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
     @ToString.Exclude // exclude lazy initializations (because when toString() calls getPatient() at an User instance, the JPA session is already closed due to lazy initialization. It leads to a LazyInitializationException)
     private User user;
+
+    @ManyToMany(mappedBy = "patients", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<Pharmacist> pharmacists = new HashSet<>();
 }
