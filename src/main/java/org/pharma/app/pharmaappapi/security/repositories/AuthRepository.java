@@ -1,16 +1,12 @@
 package org.pharma.app.pharmaappapi.security.repositories;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import org.pharma.app.pharmaappapi.security.models.RoleName;
-import org.pharma.app.pharmaappapi.security.models.User;
+import org.pharma.app.pharmaappapi.security.models.users.RoleName;
+import org.pharma.app.pharmaappapi.security.models.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.UUID;
 
 @Repository

@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.security.models;
+package org.pharma.app.pharmaappapi.security.models.users;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,6 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -25,7 +24,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class Pharmacist {
     public Pharmacist(String crf) {
         this.crf = crf;
@@ -36,6 +35,7 @@ public class Pharmacist {
     @Column(name = "id", updatable = false, nullable = false)
     @JdbcTypeCode(SqlTypes.UUID) // Hint for Hibernate to use native UUID type from database, if available
     @EqualsAndHashCode.Include
+    @ToString.Include
     private UUID id;
 
     @NotNull
@@ -46,10 +46,10 @@ public class Pharmacist {
             message = "Field crf must have between 3 and 20 characters"
     )
     @Column(name = "crf", nullable = false)
+    @ToString.Include
     private String crf;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
-    @ToString.Exclude // exclude lazy initializations (because when toString() calls getPatient() at an User instance, the JPA session is already closed due to lazy initialization. It leads to a LazyInitializationException)
     private User user;
 }
