@@ -7,7 +7,10 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.pharma.app.pharmaappapi.models.healthPlans.HealthPlan;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -52,4 +55,26 @@ public class Pharmacist {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
     private User user;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "health_plans_pharmacists",
+            joinColumns = @JoinColumn(
+                    name = "pharmacist_id",
+                    referencedColumnName = "id",
+                    nullable = false,
+                    updatable = false
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "health_plan_id",
+                    referencedColumnName = "id",
+                    nullable = false,
+                    updatable = false
+            ),
+            uniqueConstraints = @UniqueConstraint(
+                    name = "uk_pharmacist_health_plan_association",
+                    columnNames = { "pharmacist_id", "health_plan_id" }
+            )
+    )
+    private Set<HealthPlan> healthPlans = new HashSet<>();
 }

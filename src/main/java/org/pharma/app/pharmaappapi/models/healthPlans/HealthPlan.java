@@ -7,7 +7,10 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -80,4 +83,8 @@ public class HealthPlan {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "operator_id", referencedColumnName = "id", nullable = false)
     private Operator operator;
+
+    // mappedBy avoid JPA to creating a second join table (we've already created one). Pharmacist owns the relationship
+    @ManyToMany(mappedBy = "healthPlans", fetch = FetchType.LAZY)
+    private Set<Pharmacist> pharmacists = new HashSet<>();
 }
