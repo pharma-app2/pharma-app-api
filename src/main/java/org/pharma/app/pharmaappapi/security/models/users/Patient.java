@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.pharma.app.pharmaappapi.models.appointments.Appointment;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -63,4 +64,9 @@ public class Patient {
     @ManyToMany(mappedBy = "patients", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<Pharmacist> pharmacists = new HashSet<>();
+
+    // PERSIST - when we save a new patient with new appointments, these appointments will be saved with the patient
+    // MERGE - when we update a pre-existing patient and add an appointment to it, this appointment will be saved with the patient.
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private Set<Appointment> appointments = new HashSet<>();
 }
