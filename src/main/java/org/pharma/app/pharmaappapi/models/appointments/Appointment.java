@@ -56,7 +56,7 @@ public class Appointment {
     @JoinColumn(name = "appointments_modality_id", referencedColumnName = "id", nullable = false)
     private AppointmentModality appointmentModality;
 
-    // TODO: test all possibilities for CRUD at appointments -> delete an user (pharmacist and/or patient) and see what happens with appointments
+    // TODO: test all possibilities for CRUD at appointments -> delete an user (pharmacist and/or patient) and see what happens with appointments. Try to handle it with
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
     private Patient patient;
