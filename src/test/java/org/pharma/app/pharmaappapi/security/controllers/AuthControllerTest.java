@@ -2,7 +2,7 @@ package org.pharma.app.pharmaappapi.security.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
+import org.pharma.app.pharmaappapi.security.DTOs.users.SignUpPatientDTO;
 import org.pharma.app.pharmaappapi.security.config.SecurityConfig;
 import org.pharma.app.pharmaappapi.security.exceptions.CustomAuthEntryPoint;
 import org.pharma.app.pharmaappapi.security.jwt.JwtUtils;

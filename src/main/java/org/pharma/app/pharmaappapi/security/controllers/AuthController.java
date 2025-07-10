@@ -1,7 +1,7 @@
 package org.pharma.app.pharmaappapi.security.controllers;
 
 import jakarta.validation.Valid;
-import org.pharma.app.pharmaappapi.security.DTOs.*;
+import org.pharma.app.pharmaappapi.security.DTOs.users.*;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.pharma.app.pharmaappapi.security.services.AuthService;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;

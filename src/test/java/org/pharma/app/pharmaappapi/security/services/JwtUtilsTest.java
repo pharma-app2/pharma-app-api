@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.pharma.app.pharmaappapi.security.DTOs.JwtPayloadPatientDTO;
+import org.pharma.app.pharmaappapi.security.DTOs.users.JwtPayloadPatientDTO;
 import org.pharma.app.pharmaappapi.security.jwt.JwtUtils;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.springframework.http.ResponseCookie;

@@ -24,4 +24,6 @@ public interface AuthRepository extends JpaRepository<User, UUID> {
     User findFirstByEmail(@Param("emailPlaceholder") String email, @Param("rolePlaceholder") String role);
 
     User findUserPatientOrPharmacistById(UUID id);
+
+    User findUserByPatient_Id(UUID id);
 }

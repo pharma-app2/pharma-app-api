@@ -4,23 +4,31 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
+import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.pharma.app.pharmaappapi.validations.allowedDurations.AllowedDurations;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "appointments_modality")
-@Data
+@Table(name = "appointments")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     @JdbcTypeCode(SqlTypes.UUID) // Hint for Hibernate to use native UUID type from database, if available
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private UUID id;
 
     @Size(
@@ -28,6 +36,7 @@ public class Appointment {
             message = "Notes must have less than 10000 characters"
     )
     @Column(name = "pharmacist_notes", columnDefinition = "TEXT")
+    @ToString.Include
     private String pharmacistNotes;
 
     @Size(
@@ -35,17 +44,17 @@ public class Appointment {
             message = "Reason must have less than 10000 characters"
     )
     @Column(name = "patient_reason", columnDefinition = "TEXT")
-    private String pharmacistReason;
+    @ToString.Include
+    private String patientReason;
 
     @NotNull
-    @NotBlank
     @Column(name = "scheduled_at", nullable = false)
+    @ToString.Include
     private OffsetDateTime scheduledAt;
 
-    @NotNull
-    @NotBlank
     @Column(name = "duration_minutes", nullable = false)
     @AllowedDurations
+    @ToString.Include
     private Integer durationMinutes;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,5 +72,5 @@ public class Appointment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pharmacist_id", referencedColumnName = "id", nullable = false)
-    private Patient pharmacist;
+    private Pharmacist pharmacist;
 }

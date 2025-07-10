@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.pharma.app.pharmaappapi.models.appointments.Appointment;
+import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
 import org.pharma.app.pharmaappapi.models.healthPlans.HealthPlan;
 
 import java.util.HashSet;
@@ -97,6 +98,26 @@ public class Pharmacist {
     )
     private Set<Patient> patients = new HashSet<>();
 
-    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "pharmacists_appointments_modality",
+            joinColumns = @JoinColumn(
+                    name = "pharmacist_id",
+                    referencedColumnName = "id",
+                    nullable = false
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "appointments_modality_id",
+                    referencedColumnName = "id",
+                    nullable = false
+            ),
+            uniqueConstraints = @UniqueConstraint(
+                    name = "uk_pharmacist_appointments_modality_assoc",
+                    columnNames = { "pharmacist_id", "appointments_modality_id" }
+            )
+    )
+    private Set<AppointmentModality> availableModalities = new HashSet<>();
+
+    @OneToMany(mappedBy = "pharmacist", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     private Set<Appointment> appointments = new HashSet<>();
 }

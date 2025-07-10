@@ -29,7 +29,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class Patient {
     public Patient(String cpf) {
         this.cpf = cpf;
@@ -40,6 +40,7 @@ public class Patient {
     @Column(name = "id", updatable = false, nullable = false)
     @JdbcTypeCode(SqlTypes.UUID) // Hint for Hibernate to use native UUID type from database, if available
     @EqualsAndHashCode.Include
+    @ToString.Include
     private UUID id;
 
     @NotNull
@@ -50,23 +51,28 @@ public class Patient {
             message = "Field cpf must have between 3 and 20 characters"
     )
     @Column(name = "cpf", nullable = false)
+    @ToString.Include
     private String cpf;
 
     @Past(message = "Field birthday must be a past date")
     @Column(name = "birthday")
+    @ToString.Include
     private LocalDate birthday;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
-    @ToString.Exclude // exclude lazy initializations (because when toString() calls getPatient() at an User instance, the JPA session is already closed due to lazy initialization. It leads to a LazyInitializationException)
     private User user;
 
-    @ManyToMany(mappedBy = "patients", fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<Pharmacist> pharmacists = new HashSet<>();
 
     // PERSIST - when we save a new patient with new appointments, these appointments will be saved with the patient
     // MERGE - when we update a pre-existing patient and add an appointment to it, this appointment will be saved with the patient.
-    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    // Difference between CascadeTpe.REMOVE and orphanRemoval = true: the first one is executed when the father entity is deleted. The second one, when the child entity is deleted.
+    // With CascadeTpe.REMOVE, when we do fatherRep.delete(father), the children are also removed.
+    // In this application, if we do patientsRep.remove(patient), all appointments associated with this patient would be removed (we don't want that because we want to save the history)
+    // With orphanRemoval = true, when we do father.getChildren().remove(child_01) and fatherRep.save(father), child_01 is now orphan and will be removed
+    // In this application, if we do patient.getAppointments().remove(app_01) and patientsRep.save(patient), app_01 is now orphan and will be removed (we want that)
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     private Set<Appointment> appointments = new HashSet<>();
 }

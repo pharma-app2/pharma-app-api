@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.security.DTOs;
+package org.pharma.app.pharmaappapi.security.DTOs.users;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

@@ -3,7 +3,7 @@ package org.pharma.app.pharmaappapi.security.services;
 import org.modelmapper.ModelMapper;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.exceptions.UnprocessableEntityException;
-import org.pharma.app.pharmaappapi.security.DTOs.*;
+import org.pharma.app.pharmaappapi.security.DTOs.users.*;
 import org.pharma.app.pharmaappapi.security.jwt.JwtUtils;
 import org.pharma.app.pharmaappapi.security.models.users.*;
 import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 

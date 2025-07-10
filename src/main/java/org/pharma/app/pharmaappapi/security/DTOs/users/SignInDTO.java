@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.security.DTOs;
+package org.pharma.app.pharmaappapi.security.DTOs.users;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.security.DTOs;
+package org.pharma.app.pharmaappapi.security.DTOs.users;
 
 import org.springframework.http.ResponseCookie;
 

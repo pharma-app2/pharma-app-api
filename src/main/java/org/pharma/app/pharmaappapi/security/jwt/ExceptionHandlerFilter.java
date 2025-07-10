@@ -13,20 +13,20 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import java.io.IOException;
 
 // Since @RestControllerAdvice at GlobalExceptionHandler only catch exceptions from DispatcherServlet domain (controllers), we need this filter which executes before all the others
-@Component
-public class ExceptionHandlerFilter extends OncePerRequestFilter {
-    @Autowired
-    @Qualifier("handlerExceptionResolver")
-    private HandlerExceptionResolver resolver;
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        try {
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            // if any filter throws an exception, HandlerExceptionResolver treats that calling  @RestControllerAdvice
-            resolver.resolveException(request, response, null, e);
-        }
-    }
-}
+//@Component
+//public class ExceptionHandlerFilter extends OncePerRequestFilter {
+//    @Autowired
+//    @Qualifier("handlerExceptionResolver")
+//    private HandlerExceptionResolver resolver;
+//
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+//            throws ServletException, IOException {
+//        try {
+//            filterChain.doFilter(request, response);
+//        } catch (Exception e) {
+//            // if any filter throws an exception, HandlerExceptionResolver treats that calling  @RestControllerAdvice
+//            resolver.resolveException(request, response, null, e);
+//        }
+//    }
+//}

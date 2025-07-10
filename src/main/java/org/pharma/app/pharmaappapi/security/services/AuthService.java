@@ -1,6 +1,6 @@
 package org.pharma.app.pharmaappapi.security.services;
 
-import org.pharma.app.pharmaappapi.security.DTOs.*;
+import org.pharma.app.pharmaappapi.security.DTOs.users.*;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.springframework.http.ResponseCookie;
 
