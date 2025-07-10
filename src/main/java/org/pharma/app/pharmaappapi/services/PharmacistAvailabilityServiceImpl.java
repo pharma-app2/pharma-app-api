@@ -27,7 +27,7 @@ public class PharmacistAvailabilityServiceImpl implements PharmacistAvailability
 
     @Override
     public void createPharmacistAvailability(UUID userId, PharmacistAvailabilityDTO pharmacistAvailabilityDTO) {
-        Pharmacist pharmacist = pharmacistRepository.findById(userId)
+        Pharmacist pharmacist = pharmacistRepository.findFirstByUser_Id(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pharmacist", "id", userId.toString()));
 
         OffsetDateTime scheduleStart = pharmacistAvailabilityDTO.getStartTime();
