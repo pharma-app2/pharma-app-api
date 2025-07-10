@@ -16,14 +16,34 @@ CREATE TABLE IF NOT EXISTS appointments_modality (
 
 INSERT INTO appointments_modality(name) VALUES ('PRESENCIAL'), ('TELECONSULTA');
 
+CREATE TABLE IF NOT EXISTS pharmacist_availabilities (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    pharmacist_id UUID NOT NULL,
+    -- Dia da semana: 1 para Segunda, 2 para Terça, ..., 7 para Domingo
+
+    start_time TIMESTAMPTZ NOT NULL,
+    duration_minutes INTEGER NOT NULL DEFAULT 30,
+
+    appointment_id UUID NULL, -- começa com NULL
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_availabilities_pharmacists
+        FOREIGN KEY (pharmacist_id) REFERENCES pharmacists(id) ON DELETE CASCADE,
+
+    CONSTRAINT uk_availabilities_appointment_id UNIQUE (appointment_id)
+);
+
+CREATE OR REPLACE TRIGGER set_timestamp BEFORE UPDATE ON pharmacist_availabilities FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
+
 CREATE TABLE IF NOT EXISTS appointments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     patient_id UUID NOT NULL,
     pharmacist_id UUID NOT NULL,
 
-    scheduled_at TIMESTAMPTZ NOT NULL,
-    duration_minutes INTEGER NOT NULL DEFAULT 30,
+    availability_id UUID NOT NULL,
 
     appointments_status_id UUID NOT NULL,
     appointments_modality_id UUID NOT NULL,
@@ -51,13 +71,22 @@ CREATE TABLE IF NOT EXISTS appointments (
 
     CONSTRAINT fk_appointments_modality
         FOREIGN KEY (appointments_modality_id) REFERENCES appointments_modality(id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_pharmacist_availabilities
+        FOREIGN KEY (availability_id) REFERENCES pharmacist_availabilities(id)
         ON DELETE RESTRICT
 );
 
 -- Trigger para atualizar o campo 'updated_at' automaticamente
 CREATE OR REPLACE TRIGGER set_timestamp BEFORE UPDATE ON appointments FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
 
+-- Resolve dependência circular
+ALTER TABLE pharmacist_availabilities
+ADD CONSTRAINT fk_availabilities_appointments
+    FOREIGN KEY (appointment_id) REFERENCES appointments(id);
+
 -- Índices para otimizar buscas frequentes
 CREATE INDEX IF NOT EXISTS idx_appointments_patient_id ON appointments(patient_id);
 CREATE INDEX IF NOT EXISTS idx_appointments_pharmacist_id ON appointments(pharmacist_id);
-CREATE INDEX IF NOT EXISTS idx_appointments_scheduled_at ON appointments(scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_appointments_availability_id ON appointments(availability_id);

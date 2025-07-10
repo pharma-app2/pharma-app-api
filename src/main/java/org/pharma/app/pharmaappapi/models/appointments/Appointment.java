@@ -47,16 +47,6 @@ public class Appointment {
     @ToString.Include
     private String patientReason;
 
-    @NotNull
-    @Column(name = "scheduled_at", nullable = false)
-    @ToString.Include
-    private OffsetDateTime scheduledAt;
-
-    @Column(name = "duration_minutes", nullable = false)
-    @AllowedDurations
-    @ToString.Include
-    private Integer durationMinutes;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointments_status_id", referencedColumnName = "id", nullable = false)
     private AppointmentStatus appointmentStatus;
@@ -73,4 +63,12 @@ public class Appointment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pharmacist_id", referencedColumnName = "id", nullable = false)
     private Pharmacist pharmacist;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinColumn(
+        name = "availability_id", // Nome da coluna FK na tabela 'appointments'
+        referencedColumnName = "id",
+        unique = true // Garante que uma vaga só pode ser usada por uma consulta
+    )
+    private PharmacistAvailability pharmacistAvailability;
 }

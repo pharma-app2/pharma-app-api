@@ -4,10 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ForbiddenException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
-import org.pharma.app.pharmaappapi.models.appointments.Appointment;
-import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
-import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatus;
-import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatusName;
+import org.pharma.app.pharmaappapi.models.appointments.*;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.repositories.*;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
@@ -34,6 +31,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentStatusRepository appointmentStatusRepository;
     private final PharmacistRepository pharmacistRepository;
     private final PatientRepository patientRepository;
+    private final PharmacistAvailabilityRepository pharmacistAvailabilityRepository;
 
     public AppointmentServiceImpl(
             ModelMapper modelMapper,
@@ -42,7 +40,9 @@ public class AppointmentServiceImpl implements AppointmentService {
             AppointmentModalityRepository appointmentModalityRepository,
             AppointmentStatusRepository appointmentStatusRepository,
             PharmacistRepository pharmacistRepository,
-            PatientRepository patientRepository) {
+            PatientRepository patientRepository,
+            PharmacistAvailabilityRepository pharmacistAvailabilityRepository
+    ) {
         this.modelMapper = modelMapper;
         this.authRepository = authRepository;
         this.appointmentRepository = appointmentRepository;
@@ -50,6 +50,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         this.appointmentStatusRepository = appointmentStatusRepository;
         this.pharmacistRepository = pharmacistRepository;
         this.patientRepository = patientRepository;
+        this.pharmacistAvailabilityRepository = pharmacistAvailabilityRepository;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         UUID patientId = createAppointmentDTO.getPatientId();
         UUID pharmacistId = createAppointmentDTO.getPharmacistId();
         UUID modalityId = createAppointmentDTO.getModalityId();
-        OffsetDateTime scheduledAt = createAppointmentDTO.getScheduledAt();
+        UUID pharmacistAvailabilityId = createAppointmentDTO.getPharmacistAvailabilityId();
 
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient", "id", patientId.toString()));
@@ -82,50 +83,53 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentStatus appointmentStatus = appointmentStatusRepository.findFirstByName(DEFAULT_STATUS_NAME)
                 .orElseThrow(() -> new ResourceNotFoundException("Status", "name", DEFAULT_STATUS_NAME));
 
+        PharmacistAvailability availability = pharmacistAvailabilityRepository.findFirstById(pharmacistAvailabilityId)
+                .orElseThrow(() -> new ResourceNotFoundException("Availability", "id", pharmacistAvailabilityId.toString()));
+
 
         boolean isModalityAvailable = pharmacist.getAvailableModalities().contains(appointmentModality);
         if (!isModalityAvailable) {
             throw new ConflictException("This appointment modality is not available for this pharmacist");
         }
 
-        Boolean patientHasAppointment = appointmentRepository.existsByPatient(patient);
+        boolean patientHasAppointment = appointmentRepository.patientAlreadyHasSchedule(patient.getId(),AppointmentStatusName.AGENDADO.name(), AppointmentStatusName.CONFIRMADO.name());
         if (patientHasAppointment) {
             throw new ConflictException("Patient already have an appointment");
         }
 
-        OffsetDateTime newAppointmentStart = scheduledAt;
-        OffsetDateTime newAppointmentEnd = scheduledAt.plusMinutes(DEFAULT_DURATION_MINUTES);
+        // TODO: usar no método que cria horarios disponiveis pelo farmaceutico
+//        OffsetDateTime newAppointmentStart = availability.getStartTime();
+//        OffsetDateTime newAppointmentEnd = newAppointmentStart.plusMinutes(availability.getDurationMinutes());
+//
+//        boolean hasOverlapSchedule = pharmacist.getPharmacistAvailability().stream().anyMatch(
+//                avail -> {
+//                    OffsetDateTime start = avail.getStartTime();
+//                    Integer duration = avail.getDurationMinutes();
+//                    OffsetDateTime end = start.plusMinutes(duration);
+//
+//                    return (newAppointmentEnd.isAfter(start) && newAppointmentStart.isBefore(end));
+//                }
+//        );
 
-        boolean hasOverlapSchedule = pharmacist.getAppointments().stream().anyMatch(
-                appointment -> {
-                    OffsetDateTime start = appointment.getScheduledAt();
-                    Integer duration = appointment.getDurationMinutes();
-                    OffsetDateTime end = start.plusMinutes(duration);
-
-                    return (newAppointmentEnd.isAfter(start) && newAppointmentStart.isBefore(end));
-                }
-        );
-
-        if (hasOverlapSchedule) {
-            throw new ConflictException("This schedule is already in use");
+        // Verifica se a vaga escolhida já está associada a outra consulta.
+        if (availability.getAppointment() != null) {
+            throw new ConflictException("This availability slot is already booked.");
         }
 
         Appointment appointment = new Appointment();
 
         appointment.setAppointmentModality(appointmentModality);
-        appointmentModality.getAppointments().add(appointment);
 
         appointment.setAppointmentStatus(appointmentStatus);
-        appointmentStatus.getAppointments().add(appointment);
 
         appointment.setPatient(patient);
-        patient.getAppointments().add(appointment);
+//        patient.getAppointments().add(appointment);
 
         appointment.setPharmacist(pharmacist);
-        pharmacist.getAppointments().add(appointment);
+//        pharmacist.getAppointments().add(appointment);
 
-        appointment.setScheduledAt(scheduledAt);
-        appointment.setDurationMinutes(DEFAULT_DURATION_MINUTES);
+//        appointment.setPharmacistAvailability(availability);
+        availability.setAppointment(appointment);
 
         Appointment savedAppointment = appointmentRepository.save(appointment);
 

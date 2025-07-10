@@ -23,5 +23,5 @@ public class CreateAppointmentDTO {
     private UUID modalityId;
 
     @NotNull
-    private OffsetDateTime scheduledAt;
+    private UUID pharmacistAvailabilityId;
 }
