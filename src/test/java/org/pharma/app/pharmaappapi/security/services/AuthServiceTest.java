@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.exceptions.UnprocessableEntityException;
-import org.pharma.app.pharmaappapi.security.DTOs.SignUpPatientDTO;
+import org.pharma.app.pharmaappapi.security.DTOs.users.SignUpPatientDTO;
 import org.pharma.app.pharmaappapi.security.models.users.Role;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.pharma.app.pharmaappapi.security.models.users.User;

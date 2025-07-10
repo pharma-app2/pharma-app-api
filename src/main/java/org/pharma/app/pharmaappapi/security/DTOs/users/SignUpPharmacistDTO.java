@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.security.DTOs;
+package org.pharma.app.pharmaappapi.security.DTOs.users;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +10,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignInDTO {
+public class SignUpPharmacistDTO {
+    @NotNull
+    @NotBlank
+    @Size(
+            min = 3,
+            max = 50,
+            message = "Field fullName must have between 3 and 50 characters"
+    )
+    private String fullName;
+
     @NotNull
     @NotBlank
     @Size(
@@ -28,4 +37,13 @@ public class SignInDTO {
             message = "Field password must have between 3 and 255 characters"
     )
     private String password;
+
+    @NotNull
+    @NotBlank
+    @Size(
+            min = 3,
+            max = 20,
+            message = "Field crf must have between 3 and 20 characters"
+    )
+    private String crf;
 }

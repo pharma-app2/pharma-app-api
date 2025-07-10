@@ -47,12 +47,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<APIExceptionResponse> customConflictAPIException(ConflictException e) {
+    public ResponseEntity<APIExceptionResponse> customConflictException(ConflictException e) {
         String message = e.getMessage();
         Integer statusCode = HttpStatus.CONFLICT.value();
         APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<APIExceptionResponse> customForbiddenException(ForbiddenException e) {
+        String message = e.getMessage();
+        Integer statusCode = HttpStatus.FORBIDDEN.value();
+        APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
@@ -82,16 +91,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(apiResponse);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, String>> handleJwtExceptions(RuntimeException e) {
-        if (!(e.getCause() instanceof ExpiredJwtException) && !(e.getCause() instanceof UnsupportedJwtException) && !(e.getCause() instanceof MalformedJwtException) && !(e.getCause() instanceof SignatureException) && !(e.getCause() instanceof IllegalArgumentException)) {
-            e.getCause();
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Unexpected JWT Exception", "message", e.getMessage()));
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("error", "Invalid Token", "message", e.getMessage()));
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<Map<String, String>> handleJwtExceptions(RuntimeException e) {
+//        if (!(e.getCause() instanceof ExpiredJwtException) && !(e.getCause() instanceof UnsupportedJwtException) && !(e.getCause() instanceof MalformedJwtException) && !(e.getCause() instanceof SignatureException) && !(e.getCause() instanceof IllegalArgumentException)) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body(Map.of("error", "Unexpected Exception", "message", e.getMessage()));
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                .body(Map.of("error", "Invalid Token", "message", e.getMessage()));
+//    }
 }

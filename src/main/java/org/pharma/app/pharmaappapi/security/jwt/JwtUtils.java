@@ -6,7 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.pharma.app.pharmaappapi.security.DTOs.JwtPayloadPatientDTO;
+import org.pharma.app.pharmaappapi.security.DTOs.users.JwtPayloadPatientDTO;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Value;
