@@ -1,17 +1,13 @@
 package org.pharma.app.pharmaappapi.models.appointments;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
-import org.pharma.app.pharmaappapi.validations.allowedDurations.AllowedDurations;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity

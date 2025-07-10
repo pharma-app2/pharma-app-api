@@ -3,7 +3,6 @@ package org.pharma.app.pharmaappapi.controllers;
 import jakarta.validation.Valid;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
-import org.pharma.app.pharmaappapi.security.services.UserDetailsServiceImpl;
 import org.pharma.app.pharmaappapi.services.AppointmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
