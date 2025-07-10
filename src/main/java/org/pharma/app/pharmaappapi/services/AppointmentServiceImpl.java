@@ -5,6 +5,7 @@ import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ForbiddenException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
 import org.pharma.app.pharmaappapi.models.appointments.*;
+import org.pharma.app.pharmaappapi.models.pharmacistAvailabilities.PharmacistAvailability;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.repositories.*;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
@@ -89,24 +90,10 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new ConflictException("This appointment modality is not available for this pharmacist");
         }
 
-        boolean patientHasAppointment = appointmentRepository.patientAlreadyHasSchedule(patient.getId(),AppointmentStatusName.AGENDADO.name(), AppointmentStatusName.CONFIRMADO.name());
+        boolean patientHasAppointment = appointmentRepository.patientAlreadyHasSchedule(patient.getId(),AppointmentStatusName.AGENDADO.name(), AppointmentStatusName.CONFIRMADO.name(), availability.getStartTime());
         if (patientHasAppointment) {
             throw new ConflictException("Patient already have an appointment");
         }
-
-        // TODO: usar no método que cria horarios disponiveis pelo farmaceutico
-//        OffsetDateTime newAppointmentStart = availability.getStartTime();
-//        OffsetDateTime newAppointmentEnd = newAppointmentStart.plusMinutes(availability.getDurationMinutes());
-//
-//        boolean hasOverlapSchedule = pharmacist.getPharmacistAvailability().stream().anyMatch(
-//                avail -> {
-//                    OffsetDateTime start = avail.getStartTime();
-//                    Integer duration = avail.getDurationMinutes();
-//                    OffsetDateTime end = start.plusMinutes(duration);
-//
-//                    return (newAppointmentEnd.isAfter(start) && newAppointmentStart.isBefore(end));
-//                }
-//        );
 
         // Verifica se a vaga escolhida já está associada a outra consulta.
         if (availability.getAppointment() != null) {

@@ -1,10 +1,11 @@
-package org.pharma.app.pharmaappapi.models.appointments;
+package org.pharma.app.pharmaappapi.models.pharmacistAvailabilities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.pharma.app.pharmaappapi.models.appointments.Appointment;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.pharma.app.pharmaappapi.validations.allowedDurations.AllowedDurations;
 

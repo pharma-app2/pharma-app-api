@@ -111,8 +111,11 @@ public class AuthServiceImpl implements AuthService {
         String email = signInDTO.getEmail();
         String password = signInDTO.getPassword();
         Collection<? extends GrantedAuthority> authorities = getAuthoritiesByRole(roleName);
+        String roleStr = authorities.iterator().next().getAuthority();
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+        RoleName role = roleStr.equals(RoleName.ROLE_PHARMACIST.name()) ? RoleName.ROLE_PHARMACIST : RoleName.ROLE_PATIENT;
+
+        RoleUsernamePasswordAuthenticationToken authenticationToken = new RoleUsernamePasswordAuthenticationToken(email, password, role);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -122,9 +125,9 @@ public class AuthServiceImpl implements AuthService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookieFromUserDetails(userDetails);
 
-        String role = getRoleByUserDetails(userDetails);
+        String newRole = getRoleByUserDetails(userDetails);
 
-        return new LoginResponse(userDetails.getId(), userDetails.getUsername(), role, jwtCookie);
+        return new LoginResponse(userDetails.getId(), userDetails.getUsername(), newRole, jwtCookie);
     }
 
     @Override
