@@ -24,13 +24,14 @@ public class PharmacistAvailabilityController {
         this.pharmacistAvailabilityService = pharmacistAvailabilityService;
     }
 
-    @PostMapping("/")
+    @PostMapping("/pharmacist-availabilities")
     @PreAuthorize("hasRole('ROLE_PHARMACIST')")
     public ResponseEntity<?> createPharmacistAvailability(
             Authentication authentication,
             @RequestBody @Valid PharmacistAvailabilityDTO pharmacistAvailabilityDTO) {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        System.out.println(userDetails.getAuthorities().iterator().next().getAuthority());
         UUID userId = userDetails.getId();
 
         pharmacistAvailabilityService.createPharmacistAvailability(userId, pharmacistAvailabilityDTO);

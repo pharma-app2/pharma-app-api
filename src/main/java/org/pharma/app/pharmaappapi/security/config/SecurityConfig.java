@@ -11,6 +11,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,12 +24,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final CustomAuthEntryPoint customAuthEntryPoint;
+    private final RoleAuthenticationProvider roleAuthenticationProvider;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, CustomAuthEntryPoint customAuthEntryPoint) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, CustomAuthEntryPoint customAuthEntryPoint, RoleAuthenticationProvider roleAuthenticationProvider) {
         this.userDetailsService = userDetailsService;
+        this.roleAuthenticationProvider = roleAuthenticationProvider;
         this.customAuthEntryPoint = customAuthEntryPoint;
     }
 
@@ -68,7 +72,7 @@ public class SecurityConfig {
             auth.anyRequest().authenticated();
         });
 
-        http.authenticationProvider(authenticationProvider());
+        http.authenticationProvider(roleAuthenticationProvider);
 
         http.addFilterBefore(authTokenJwtFilterBean(), UsernamePasswordAuthenticationFilter.class);
 //        http.addFilterBefore(exceptionHandlerFilterBean(), AuthTokenJwtFilter.class);
@@ -94,12 +98,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public RoleAuthenticationProvider authenticationProvider() {
-        return new RoleAuthenticationProvider();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
+    public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

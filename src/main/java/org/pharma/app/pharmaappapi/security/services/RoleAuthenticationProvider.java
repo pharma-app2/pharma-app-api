@@ -34,7 +34,7 @@ public class RoleAuthenticationProvider implements AuthenticationProvider {
             throw new UsernameNotFoundException("User not found");
         }
 
-        return new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
+        return new RoleUsernamePasswordAuthenticationToken(userDetails, null, role);
     }
 
     @Override

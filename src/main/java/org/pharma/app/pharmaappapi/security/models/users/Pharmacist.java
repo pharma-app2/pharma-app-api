@@ -9,7 +9,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.pharma.app.pharmaappapi.models.appointments.Appointment;
 import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
-import org.pharma.app.pharmaappapi.models.appointments.PharmacistAvailability;
+import org.pharma.app.pharmaappapi.models.pharmacistAvailabilities.PharmacistAvailability;
 import org.pharma.app.pharmaappapi.models.healthPlans.HealthPlan;
 
 import java.util.HashSet;
@@ -123,5 +123,5 @@ public class Pharmacist {
     private Set<Appointment> appointments = new HashSet<>();
 
     @OneToMany(mappedBy = "pharmacist", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
-    private Set<PharmacistAvailability> pharmacistAvailability;
+    private Set<PharmacistAvailability> pharmacistAvailabilities;
 }

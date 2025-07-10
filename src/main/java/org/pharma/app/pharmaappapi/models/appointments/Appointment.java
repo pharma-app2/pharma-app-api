@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.pharma.app.pharmaappapi.models.pharmacistAvailabilities.PharmacistAvailability;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 
