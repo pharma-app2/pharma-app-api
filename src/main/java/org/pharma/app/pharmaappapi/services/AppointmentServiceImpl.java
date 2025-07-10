@@ -10,13 +10,10 @@ import org.pharma.app.pharmaappapi.repositories.*;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
-import org.pharma.app.pharmaappapi.security.models.users.User;
 import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
