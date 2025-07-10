@@ -36,9 +36,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
         nativeQuery = true,
         value = "SELECT EXISTS (" +
                 "SELECT 1 FROM appointments a " +
+                "JOIN pharmacist_availabilities pa ON a.availability_id = pa.id " +
                 "WHERE a.pharmacist_id = :pharmacistId " +
-                "AND :newAppointmentStart < (a.scheduled_at + (a.duration_minutes * INTERVAL '1 minute')) " +
-                "AND :newAppointmentEnd > a.scheduled_at);"
+                "AND :newAppointmentStart < (pa.start_time + (pa.duration_minutes * INTERVAL '1 minute')) " +
+                "AND :newAppointmentEnd > pa.start_time);"
     )
     boolean hasOverlappingAppointment(
             @Param("pharmacistId") UUID pharmacistId,
