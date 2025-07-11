@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
+import org.pharma.app.pharmaappapi.security.services.RoleUsernamePasswordAuthToken;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,13 +48,14 @@ public class AuthTokenJwtFilter extends OncePerRequestFilter {
             Claims claims = jwtUtils.validateAndParseClaims(jwtToken);
             String requestUserEmail = claims.getSubject();
 
-            RoleName roleEnum = RoleName.valueOf(claims.get("role", String.class));
+            RoleName role = RoleName.valueOf(claims.get("role", String.class));
 
-            UserDetails userDetails = userDetailsService.loadUserByUsernameAndRole(requestUserEmail, roleEnum);
+            UserDetails userDetails = userDetailsService.loadUserByUsernameAndRole(requestUserEmail, role);
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
+                    new RoleUsernamePasswordAuthToken(
                             userDetails,
                             null,
+                            role,
                             userDetails.getAuthorities()
                     );
 

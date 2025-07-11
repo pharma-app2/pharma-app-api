@@ -1,5 +1,6 @@
 package org.pharma.app.pharmaappapi.security.repositories;
 
+import org.pharma.app.pharmaappapi.security.DTOs.users.UserInfoDTO;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.pharma.app.pharmaappapi.security.models.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,5 +24,14 @@ public interface AuthRepository extends JpaRepository<User, UUID> {
     // We explicitly bring roles table (because we build our entity with Lazy initialization - see User model)
     User findFirstByEmailAndRole(@Param("emailPlaceholder") String email, @Param("rolePlaceholder") String role);
 
-    User findUserPatientOrPharmacistById(UUID id);
+    @Query(
+            nativeQuery = true,
+            value = "SELECT u.full_name AS fullName, u.email, r.name AS roleName, pa.cpf, pa.birthday, ph.crf " +
+                    "FROM users u " +
+                    "INNER JOIN roles r ON u.role_id = r.id " +
+                    "LEFT JOIN patients pa ON pa.user_id = u.id " +
+                    "LEFT JOIN pharmacists ph ON ph.user_id = u.id " +
+                    "WHERE u.id = :idPlaceholder;"
+    )
+    UserInfoDTO findUserInfosById(@Param("idPlaceholder") UUID id);
 }
