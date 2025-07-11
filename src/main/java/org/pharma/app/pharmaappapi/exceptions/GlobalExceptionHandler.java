@@ -91,14 +91,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(apiResponse);
     }
 
-//    @ExceptionHandler(RuntimeException.class)
-//    public ResponseEntity<Map<String, String>> handleJwtExceptions(RuntimeException e) {
-//        if (!(e.getCause() instanceof ExpiredJwtException) && !(e.getCause() instanceof UnsupportedJwtException) && !(e.getCause() instanceof MalformedJwtException) && !(e.getCause() instanceof SignatureException) && !(e.getCause() instanceof IllegalArgumentException)) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(Map.of("error", "Unexpected Exception", "message", e.getMessage()));
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                .body(Map.of("error", "Invalid Token", "message", e.getMessage()));
-//    }
+    @ExceptionHandler(InvalidJwtException.class)
+    public ResponseEntity<APIExceptionResponse> customInvalidJwtException(InvalidJwtException e) {
+        String message = e.getMessage();
+        Integer statusCode = HttpStatus.UNAUTHORIZED.value();
+        APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+    }
 }

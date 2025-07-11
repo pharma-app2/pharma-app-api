@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.pharma.app.pharmaappapi.exceptions.InvalidJwtException;
 import org.pharma.app.pharmaappapi.security.DTOs.users.JwtPayloadPatientDTO;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
@@ -56,22 +57,22 @@ public class JwtUtils {
             return parser.parseSignedClaims(token).getPayload();
 
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException(String.format("JWT Token has expired: %s", e.getMessage()), e);
+            throw new InvalidJwtException(String.format("JWT Token has expired: %s", e.getMessage()), e);
 
         } catch (UnsupportedJwtException e) {
-            throw new RuntimeException(String.format("JWT Token is unsupported: %s", e.getMessage()), e);
+            throw new InvalidJwtException(String.format("JWT Token is unsupported: %s", e.getMessage()), e);
 
         } catch (MalformedJwtException e) {
-            throw new RuntimeException(String.format("Invalid JWT Token: %s", e.getMessage()), e);
+            throw new InvalidJwtException(String.format("Invalid JWT Token: %s", e.getMessage()), e);
 
         } catch (SignatureException e) {
-            throw new RuntimeException(String.format("Invalid JWT signature: %s", e.getMessage()), e);
+            throw new InvalidJwtException(String.format("Invalid JWT signature: %s", e.getMessage()), e);
 
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException(String.format("JWT claims string is empty: %s", e.getMessage()), e);
+            throw new InvalidJwtException(String.format("JWT claims string is empty: %s", e.getMessage()), e);
 
         } catch (InvalidClaimException e) {
-            throw new RuntimeException(String.format("Invalid JWT claim: %s", e.getMessage()), e);
+            throw new InvalidJwtException(String.format("Invalid JWT claim: %s", e.getMessage()), e);
         }
     }
 
