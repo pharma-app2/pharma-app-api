@@ -26,12 +26,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final UserDetailsServiceImpl userDetailsService;
     private final CustomAuthEntryPoint customAuthEntryPoint;
     private final RoleAuthenticationProvider roleAuthenticationProvider;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, CustomAuthEntryPoint customAuthEntryPoint, RoleAuthenticationProvider roleAuthenticationProvider) {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(CustomAuthEntryPoint customAuthEntryPoint, RoleAuthenticationProvider roleAuthenticationProvider) {
         this.roleAuthenticationProvider = roleAuthenticationProvider;
         this.customAuthEntryPoint = customAuthEntryPoint;
     }

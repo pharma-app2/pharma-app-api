@@ -1,5 +1,6 @@
 package org.pharma.app.pharmaappapi.security.DTOs.users;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class SignInDTO {
     @NotNull
     @NotBlank
+    @Email
     @Size(
             min = 3,
             max = 100,

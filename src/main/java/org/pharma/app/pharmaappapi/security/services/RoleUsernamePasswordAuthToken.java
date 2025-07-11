@@ -8,17 +8,17 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 @Getter
-public class RoleUsernamePasswordAuthenticationToken extends UsernamePasswordAuthenticationToken {
+public class RoleUsernamePasswordAuthToken extends UsernamePasswordAuthenticationToken {
     private final RoleName role;
 
     // Before authentication
-    public RoleUsernamePasswordAuthenticationToken(Object principal, Object credentials, RoleName role) {
+    public RoleUsernamePasswordAuthToken(Object principal, Object credentials, RoleName role) {
         super(principal, credentials);
         this.role = role;
     }
 
     // After successful authentication
-    public RoleUsernamePasswordAuthenticationToken(Object principal, Object credentials, RoleName role, Collection<? extends GrantedAuthority> authorities) {
+    public RoleUsernamePasswordAuthToken(Object principal, Object credentials, RoleName role, Collection<? extends GrantedAuthority> authorities) {
         super(principal, credentials, authorities);
         this.role = role;
     }
