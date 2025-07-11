@@ -99,4 +99,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<APIExceptionResponse> RuntimeException(RuntimeException e) {
+        String message = e.getMessage();
+        Integer statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
+        APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+    }
 }

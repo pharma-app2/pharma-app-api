@@ -29,20 +29,17 @@ public class AuthServiceImpl implements AuthService {
     private final AuthRepository authRepository;
     private final RoleRepository roleRepository;
     private final JwtUtils jwtUtils;
-    private final ModelMapper modelMapper;
 
     public AuthServiceImpl(AuthenticationManager authenticationManager,
                            PasswordEncoder passwordEncoder,
                            AuthRepository authRepository,
                            RoleRepository roleRepository,
-                           JwtUtils jwtUtils,
-                           ModelMapper modelMapper) {
+                           JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.authRepository = authRepository;
         this.roleRepository = roleRepository;
         this.jwtUtils = jwtUtils;
-        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -121,8 +118,7 @@ public class AuthServiceImpl implements AuthService {
     public UserInfoDTO getCurrentUserInfoByUserDetails(UserDetailsImpl userDetails) {
         UUID userId = userDetails.getId();
 
-        User patient = authRepository.findUserPatientOrPharmacistById(userId);
-        return modelMapper.map(patient, UserInfoDTO.class);
+        return authRepository.findUserInfosById(userId);
     }
 
     @Override
