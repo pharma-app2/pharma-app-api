@@ -3,42 +3,46 @@ package org.pharma.app.pharmaappapi.security.services;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+
 @Component
 public class RoleAuthenticationProvider implements AuthenticationProvider {
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public RoleAuthenticationProvider(UserDetailsServiceImpl userDetailsService, PasswordEncoder passwordEncoder) {
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        RoleUsernamePasswordAuthenticationToken customToken = (RoleUsernamePasswordAuthenticationToken) authentication;
-        RoleName role = customToken.getRole();
+        RoleUsernamePasswordAuthToken authToken = (RoleUsernamePasswordAuthToken) authentication;
+        RoleName role = authToken.getRole();
 
         UserDetails userDetails = userDetailsService.loadUserByUsernameAndRole(username, role);
 
-        // Verifica a senha
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new UsernameNotFoundException("User not found");
         }
 
-        return new RoleUsernamePasswordAuthenticationToken(userDetails, null, role);
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+
+        return new RoleUsernamePasswordAuthToken(userDetails, null, role, authorities);
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return authentication.isAssignableFrom(RoleUsernamePasswordAuthenticationToken.class);
+        return authentication.isAssignableFrom(RoleUsernamePasswordAuthToken.class);
     }
 }

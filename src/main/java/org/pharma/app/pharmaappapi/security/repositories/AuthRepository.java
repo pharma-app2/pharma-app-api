@@ -21,9 +21,7 @@ public interface AuthRepository extends JpaRepository<User, UUID> {
                     "WHERE u.email = :emailPlaceholder AND r.name = :rolePlaceholder"
     )
     // We explicitly bring roles table (because we build our entity with Lazy initialization - see User model)
-    User findFirstByEmail(@Param("emailPlaceholder") String email, @Param("rolePlaceholder") String role);
+    User findFirstByEmailAndRole(@Param("emailPlaceholder") String email, @Param("rolePlaceholder") String role);
 
     User findUserPatientOrPharmacistById(UUID id);
-
-    User findUserByPatient_Id(UUID id);
 }

@@ -71,7 +71,7 @@ public class Patient {
     // Difference between CascadeTpe.REMOVE and orphanRemoval = true: the first one is executed when the father entity is deleted. The second one, when the child entity is deleted.
     // With CascadeTpe.REMOVE, when we do fatherRep.delete(father), the children are also removed.
     // In this application, if we do patientsRep.remove(patient), all appointments associated with this patient would be removed (we don't want that because we want to save the history)
-    // With orphanRemoval = true, when we do father.getChildren().remove(child_01) and fatherRep.save(father), child_01 is now orphan and will be removed
+    // With orphanRemoval = true, when we do father.getChildren().remove(child_01) and fatherRep.save(father), child_01 is now orphan and will be removed automatically (no need to do childRep.remove(child_01))
     // In this application, if we do patient.getAppointments().remove(app_01) and patientsRep.save(patient), app_01 is now orphan and will be removed (we want that)
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     private Set<Appointment> appointments = new HashSet<>();

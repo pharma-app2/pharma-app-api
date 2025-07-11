@@ -78,7 +78,6 @@ public class JwtUtils {
     public String buildJwt(JwtPayloadPatientDTO payload) {
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
-        // TODO: change exp to a secure place
         long expMillis = nowMillis + jwtExpTime;
         Date expirationDate = new Date(expMillis);
 
@@ -108,10 +107,7 @@ public class JwtUtils {
                 .orElseThrow(() -> new RuntimeException("No role provided"));
 
         String roleStr = authority.getAuthority();
-        RoleName role = roleStr.equals("ROLE_ADMIN")
-                ? RoleName.ROLE_ADMIN
-                : roleStr.equals("ROLE_PHARMACIST") ? RoleName.ROLE_PHARMACIST
-                : RoleName.ROLE_PATIENT;
+        RoleName role = RoleName.valueOf(roleStr);
 
         JwtPayloadPatientDTO payload = new JwtPayloadPatientDTO(userDetails.getId(), userDetails.getUsername(), role);
         String jwtToken = buildJwt(payload);

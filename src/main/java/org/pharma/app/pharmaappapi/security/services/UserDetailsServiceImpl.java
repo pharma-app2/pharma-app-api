@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // Since we're using @Transactional, the JPA session doesn't close after this query (so we can use .getRole() at UserDetailsImpl)
-        User user = authRepository.findFirstByEmail(email, RoleName.ROLE_PATIENT.name());
+        User user = authRepository.findFirstByEmailAndRole(email, RoleName.ROLE_PATIENT.name());
 
         if (user != null) {
             return UserDetailsImpl.build(user);
@@ -33,7 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsernameAndRole(String email, RoleName role) throws UsernameNotFoundException {
         // Since we're using @Transactional, the JPA session doesn't close after this query (so we can use .getRole() at UserDetailsImpl)
-        User user = authRepository.findFirstByEmail(email, role.name());
+        User user = authRepository.findFirstByEmailAndRole(email, role.name());
 
         if (user != null) {
             return UserDetailsImpl.build(user);

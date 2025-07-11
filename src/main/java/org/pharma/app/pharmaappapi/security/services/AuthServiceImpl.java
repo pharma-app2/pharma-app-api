@@ -10,7 +10,6 @@ import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
 import org.pharma.app.pharmaappapi.security.repositories.RoleRepository;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,8 +36,7 @@ public class AuthServiceImpl implements AuthService {
                            AuthRepository authRepository,
                            RoleRepository roleRepository,
                            JwtUtils jwtUtils,
-                           ModelMapper modelMapper
-    ) {
+                           ModelMapper modelMapper) {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.authRepository = authRepository;
@@ -58,22 +56,15 @@ public class AuthServiceImpl implements AuthService {
         Boolean patientExistsByEmail = authRepository.existsByEmailAndRole_Name(email, RoleName.ROLE_PATIENT);
         Boolean patientExistsByCpf = authRepository.existsByPatient_CpfAndRole_Name(cpf, RoleName.ROLE_PATIENT);
 
-        if (patientExistsByCpf) {
-            throw new ResourceAlreadyExistsException("Patient", "cpf", cpf);
-        }
-
-        if (patientExistsByEmail) {
-            throw new ResourceAlreadyExistsException("Patient", "email", email);
-        }
-
-        if (!password.equals(passwordConfirmation)) {
-            throw new UnprocessableEntityException("Password and password confirmation don't match.");
-        }
+        if (patientExistsByCpf) throw new ResourceAlreadyExistsException("Patient", "cpf", cpf);
+        if (patientExistsByEmail) throw new ResourceAlreadyExistsException("Patient", "email", email);
+        if (!password.equals(passwordConfirmation)) throw new UnprocessableEntityException("Password and password confirmation don't match.");
 
         String encodedPassword = passwordEncoder.encode(password);
-        User user = new User(fullName, email, encodedPassword);
 
+        User user = new User(fullName, email, encodedPassword);
         Patient patient = new Patient(cpf);
+
         user.setPatient(patient);
         patient.setUser(user);
 
@@ -110,13 +101,9 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse signInUser(SignInDTO signInDTO, RoleName roleName) {
         String email = signInDTO.getEmail();
         String password = signInDTO.getPassword();
-        Collection<? extends GrantedAuthority> authorities = getAuthoritiesByRole(roleName);
-        String roleStr = authorities.iterator().next().getAuthority();
 
-        RoleName role = roleStr.equals(RoleName.ROLE_PHARMACIST.name()) ? RoleName.ROLE_PHARMACIST : RoleName.ROLE_PATIENT;
-
-        RoleUsernamePasswordAuthenticationToken authenticationToken = new RoleUsernamePasswordAuthenticationToken(email, password, role);
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        RoleUsernamePasswordAuthToken authToken = new RoleUsernamePasswordAuthToken(email, password, roleName);
+        Authentication authentication = authenticationManager.authenticate(authToken);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
@@ -125,9 +112,9 @@ public class AuthServiceImpl implements AuthService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookieFromUserDetails(userDetails);
 
-        String newRole = getRoleByUserDetails(userDetails);
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-        return new LoginResponse(userDetails.getId(), userDetails.getUsername(), newRole, jwtCookie);
+        return new LoginResponse(userDetails.getId(), userDetails.getUsername(), role, jwtCookie);
     }
 
     @Override
@@ -141,18 +128,5 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseCookie getCleanJwtCookie() {
         return jwtUtils.getCleanJwtCookie();
-    }
-
-    private String getRoleByUserDetails(UserDetailsImpl userDetails) {
-        return userDetails
-                .getAuthorities()
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No role provided"))
-                .getAuthority();
-    }
-
-    private Collection<? extends GrantedAuthority> getAuthoritiesByRole(RoleName roleName) {
-        return List.of(new SimpleGrantedAuthority(roleName.name()));
     }
 }
