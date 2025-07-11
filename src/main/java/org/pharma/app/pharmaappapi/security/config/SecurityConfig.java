@@ -2,6 +2,7 @@ package org.pharma.app.pharmaappapi.security.config;
 
 import org.pharma.app.pharmaappapi.security.exceptions.CustomAuthEntryPoint;
 import org.pharma.app.pharmaappapi.security.jwt.AuthTokenJwtFilter;
+import org.pharma.app.pharmaappapi.security.jwt.ExceptionHandlerFilter;
 import org.pharma.app.pharmaappapi.security.services.RoleAuthenticationProvider;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
@@ -73,22 +74,22 @@ public class SecurityConfig {
         http.authenticationProvider(roleAuthenticationProvider);
 
         http.addFilterBefore(authTokenJwtFilterBean(), UsernamePasswordAuthenticationFilter.class);
-//        http.addFilterBefore(exceptionHandlerFilterBean(), AuthTokenJwtFilter.class);
+        http.addFilterBefore(exceptionHandlerFilterBean(), AuthTokenJwtFilter.class);
 
         return http.build();
     }
 
     @Bean
-//    @Order(Ordered.HIGHEST_PRECEDENCE + 1)
+    @Order(Ordered.HIGHEST_PRECEDENCE + 1)
     public AuthTokenJwtFilter authTokenJwtFilterBean() {
         return new AuthTokenJwtFilter();
     }
 
-//    @Bean
-//    @Order(Ordered.HIGHEST_PRECEDENCE)
-//    public ExceptionHandlerFilter exceptionHandlerFilterBean() {
-//        return new ExceptionHandlerFilter();
-//    }
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public ExceptionHandlerFilter exceptionHandlerFilterBean() {
+        return new ExceptionHandlerFilter();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
