@@ -3,9 +3,9 @@ package org.pharma.app.pharmaappapi.services;
 import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
-import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.CustomLocalDateTime;
-import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityCreateDTO;
+import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
+import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.CustomLocalDateTime;
 import org.pharma.app.pharmaappapi.repositories.AppointmentRepository;
 import org.pharma.app.pharmaappapi.repositories.PharmacistRepository;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepositories.AvailabilityProjection;
@@ -35,7 +35,8 @@ public class AvailabilityServiceImpl implements AvailabilityService {
         LocalDateTime startTime = params.getStartDate().atStartOfDay();
         LocalDateTime endTime = params.getEndDate().plusDays(1).atStartOfDay();
 
-        Set<AvailabilityProjection> availabilitiesByStartAndEndDate = availabilityRepository.findAvailabilitiesByStartAndEndDate(pharmacistId, startTime, endTime);
+        Set<AvailabilityProjection> availabilitiesByStartAndEndDate = availabilityRepository
+                .findAvailabilitiesByStartAndEndDate(pharmacistId, startTime, endTime);
 
         return availabilitiesByStartAndEndDate.stream().map(
                 avail -> {

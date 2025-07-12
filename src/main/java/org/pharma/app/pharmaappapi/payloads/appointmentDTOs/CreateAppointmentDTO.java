@@ -21,5 +21,5 @@ public class CreateAppointmentDTO {
     private UUID modalityId;
 
     @NotNull
-    private UUID pharmacistAvailabilityId;
+    private UUID availabilityId;
 }

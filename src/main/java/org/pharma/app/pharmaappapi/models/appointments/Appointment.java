@@ -67,5 +67,5 @@ public class Appointment {
         referencedColumnName = "id",
         unique = true // Garante que uma vaga só pode ser usada por uma consulta
     )
-    private Availability pharmacistAvailability;
+    private Availability availability;
 }
