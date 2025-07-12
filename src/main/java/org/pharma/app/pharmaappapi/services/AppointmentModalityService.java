@@ -6,5 +6,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface AppointmentModalityService {
-    Set<AppointmentModalityDTO> getAppointmentModalitiesFromPharmacist(UUID userId);
+    Set<AppointmentModalityDTO> getAppointmentModalitiesFromPharmacist(UUID pharmacistId);
+    void createAppointmentModalityForPharmacist(UUID userId, UUID appointmentModalityId);
 }
