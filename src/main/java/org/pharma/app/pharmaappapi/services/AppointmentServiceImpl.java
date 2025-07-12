@@ -4,7 +4,10 @@ import org.modelmapper.ModelMapper;
 import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ForbiddenException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
-import org.pharma.app.pharmaappapi.models.appointments.*;
+import org.pharma.app.pharmaappapi.models.appointments.Appointment;
+import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
+import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatus;
+import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatusName;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.repositories.*;
@@ -12,7 +15,6 @@ import org.pharma.app.pharmaappapi.repositories.availabilityRepositories.Availab
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
-import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +22,10 @@ import java.util.UUID;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
-    private final static Integer DEFAULT_DURATION_MINUTES = 30;
     private final static String DEFAULT_STATUS_NAME = AppointmentStatusName.AGENDADO.name();
 
     private final ModelMapper modelMapper;
     private final AppointmentRepository appointmentRepository;
-    private final AuthRepository authRepository;
     private final AppointmentModalityRepository appointmentModalityRepository;
     private final AppointmentStatusRepository appointmentStatusRepository;
     private final PharmacistRepository pharmacistRepository;
@@ -34,16 +34,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     public AppointmentServiceImpl(
             ModelMapper modelMapper,
-            AuthRepository authRepository,
             AppointmentRepository appointmentRepository,
             AppointmentModalityRepository appointmentModalityRepository,
             AppointmentStatusRepository appointmentStatusRepository,
             PharmacistRepository pharmacistRepository,
             PatientRepository patientRepository,
-            AvailabilityRepository pharmacistAvailabilityRepository
-    ) {
+            AvailabilityRepository pharmacistAvailabilityRepository) {
         this.modelMapper = modelMapper;
-        this.authRepository = authRepository;
         this.appointmentRepository = appointmentRepository;
         this.appointmentModalityRepository = appointmentModalityRepository;
         this.appointmentStatusRepository = appointmentStatusRepository;
@@ -60,7 +57,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         UUID patientId = createAppointmentDTO.getPatientId();
         UUID pharmacistId = createAppointmentDTO.getPharmacistId();
         UUID modalityId = createAppointmentDTO.getModalityId();
-        UUID pharmacistAvailabilityId = createAppointmentDTO.getPharmacistAvailabilityId();
+        UUID pharmacistAvailabilityId = createAppointmentDTO.getAvailabilityId();
 
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient", "id", patientId.toString()));
@@ -104,16 +101,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         Appointment appointment = new Appointment();
 
         appointment.setAppointmentModality(appointmentModality);
-
         appointment.setAppointmentStatus(appointmentStatus);
-
         appointment.setPatient(patient);
-//        patient.getAppointments().add(appointment);
-
         appointment.setPharmacist(pharmacist);
-//        pharmacist.getAppointments().add(appointment);
-
-//        appointment.setPharmacistAvailability(availability);
         availability.setAppointment(appointment);
 
         Appointment savedAppointment = appointmentRepository.save(appointment);
