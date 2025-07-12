@@ -1,18 +1,19 @@
-package org.pharma.app.pharmaappapi.payloads.pharmacistAvailabilityDTOs;
+package org.pharma.app.pharmaappapi.payloads.availabilityDTOs;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.pharma.app.pharmaappapi.validations.allowedDurations.AllowedDurations;
-
-import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PharmacistAvailabilityDTO {
+public class AvailabilityCreateDTO {
     @NotNull
     @ToString.Include
-    private OffsetDateTime startTime;
+    private CustomLocalDateTime startLocalDateTime;
 
     @NotNull
     @AllowedDurations

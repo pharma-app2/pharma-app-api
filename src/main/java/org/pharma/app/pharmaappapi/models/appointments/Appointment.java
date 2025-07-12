@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.pharma.app.pharmaappapi.models.pharmacistAvailabilities.PharmacistAvailability;
+import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 
@@ -67,5 +67,5 @@ public class Appointment {
         referencedColumnName = "id",
         unique = true // Garante que uma vaga só pode ser usada por uma consulta
     )
-    private PharmacistAvailability pharmacistAvailability;
+    private Availability pharmacistAvailability;
 }

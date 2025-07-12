@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Repository
@@ -29,7 +29,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
             @Param("patientId") UUID patientId,
             @Param("statusName1") String statusName1,
             @Param("statusName2") String statusName2,
-            @Param("startTime") OffsetDateTime startTime
+            @Param("startTime") LocalDateTime startTime
     );
 
     @Query(
@@ -43,7 +43,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     )
     boolean hasOverlappingAppointment(
             @Param("pharmacistId") UUID pharmacistId,
-            @Param("newAppointmentStart") OffsetDateTime newAppointmentStart,
-            @Param("newAppointmentEnd") OffsetDateTime newAppointmentEnd
+            @Param("newAppointmentStart") LocalDateTime newAppointmentStart,
+            @Param("newAppointmentEnd") LocalDateTime newAppointmentEnd
     );
 }

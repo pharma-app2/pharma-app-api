@@ -5,9 +5,10 @@ import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ForbiddenException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
 import org.pharma.app.pharmaappapi.models.appointments.*;
-import org.pharma.app.pharmaappapi.models.pharmacistAvailabilities.PharmacistAvailability;
+import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.repositories.*;
+import org.pharma.app.pharmaappapi.repositories.availabilityRepositories.AvailabilityRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
@@ -29,7 +30,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentStatusRepository appointmentStatusRepository;
     private final PharmacistRepository pharmacistRepository;
     private final PatientRepository patientRepository;
-    private final PharmacistAvailabilityRepository pharmacistAvailabilityRepository;
+    private final AvailabilityRepository pharmacistAvailabilityRepository;
 
     public AppointmentServiceImpl(
             ModelMapper modelMapper,
@@ -39,7 +40,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             AppointmentStatusRepository appointmentStatusRepository,
             PharmacistRepository pharmacistRepository,
             PatientRepository patientRepository,
-            PharmacistAvailabilityRepository pharmacistAvailabilityRepository
+            AvailabilityRepository pharmacistAvailabilityRepository
     ) {
         this.modelMapper = modelMapper;
         this.authRepository = authRepository;
@@ -81,7 +82,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentStatus appointmentStatus = appointmentStatusRepository.findFirstByName(DEFAULT_STATUS_NAME)
                 .orElseThrow(() -> new ResourceNotFoundException("Status", "name", DEFAULT_STATUS_NAME));
 
-        PharmacistAvailability availability = pharmacistAvailabilityRepository.findFirstById(pharmacistAvailabilityId)
+        Availability availability = pharmacistAvailabilityRepository.findFirstById(pharmacistAvailabilityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Availability", "id", pharmacistAvailabilityId.toString()));
 
 
