@@ -1,0 +1,29 @@
+package org.pharma.app.pharmaappapi.controllers;
+
+import org.pharma.app.pharmaappapi.payloads.appointmentModalityDTOs.AppointmentModalityDTO;
+import org.pharma.app.pharmaappapi.services.AppointmentModalityService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api")
+public class AppointmentModalityController {
+    private final AppointmentModalityService appointmentModalityService;
+
+    public AppointmentModalityController(AppointmentModalityService appointmentModalityService) {
+        this.appointmentModalityService = appointmentModalityService;
+    }
+
+    @GetMapping("/pharmacists/{pharmacistId}/appointments-modalities")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public ResponseEntity<Set<AppointmentModalityDTO>> getAppointmentModalitiesFromPharmacist(@PathVariable UUID pharmacistId) {
+        Set<AppointmentModalityDTO> modalities = appointmentModalityService.getAppointmentModalitiesFromPharmacist(pharmacistId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(modalities);
+    }
+}
