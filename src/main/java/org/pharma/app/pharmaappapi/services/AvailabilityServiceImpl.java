@@ -8,8 +8,8 @@ import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParamet
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.CustomLocalDateTime;
 import org.pharma.app.pharmaappapi.repositories.AppointmentRepository;
 import org.pharma.app.pharmaappapi.repositories.PharmacistRepository;
-import org.pharma.app.pharmaappapi.repositories.availabilityRepositories.AvailabilityProjection;
-import org.pharma.app.pharmaappapi.repositories.availabilityRepositories.AvailabilityRepository;
+import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityProjection;
+import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.springframework.stereotype.Service;
 

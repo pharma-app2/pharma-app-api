@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.repositories.availabilityRepositories;
+package org.pharma.app.pharmaappapi.repositories.availabilityRepository;
 
 import java.time.LocalDateTime;
 

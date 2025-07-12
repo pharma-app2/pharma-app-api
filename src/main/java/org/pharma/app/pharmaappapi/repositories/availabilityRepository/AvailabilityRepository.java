@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.repositories.availabilityRepositories;
+package org.pharma.app.pharmaappapi.repositories.availabilityRepository;
 
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.springframework.data.jpa.repository.JpaRepository;
