@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,13 +23,13 @@ public class AuthController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('ROLE_PHARMACIST', 'ROLE_PATIENT')")
     public ResponseEntity<UserInfoDTO> getCurrentUserInfo(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         UserInfoDTO currentUserInfo = authService.getCurrentUserInfoByUserDetails(userDetails);
         return ResponseEntity.status(HttpStatus.OK).body(currentUserInfo);
     }
-
 
     @PostMapping("/auth/signup/patient")
     public ResponseEntity<?> signUpPatient(@RequestBody @Valid SignUpPatientDTO signUpDTO) {
@@ -64,6 +65,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_PHARMACIST', 'ROLE_PATIENT')")
     @PostMapping("/signout")
     public ResponseEntity<?> signOutUser() {
         ResponseCookie cleanJwtCookie = authService.getCleanJwtCookie();

@@ -25,7 +25,6 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            // if any filter throws an exception, HandlerExceptionResolver treats that calling  @RestControllerAdvice
             resolver.resolveException(request, response, null, e);
         }
     }

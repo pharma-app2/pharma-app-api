@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.models.pharmacistAvailabilities;
+package org.pharma.app.pharmaappapi.models.availabilities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +9,7 @@ import org.pharma.app.pharmaappapi.models.appointments.Appointment;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.pharma.app.pharmaappapi.validations.allowedDurations.AllowedDurations;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -20,7 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
-public class PharmacistAvailability {
+public class Availability {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
@@ -31,16 +31,18 @@ public class PharmacistAvailability {
 
     @NotNull
     @ToString.Include
-    private OffsetDateTime startTime;
+    @Column(name = "start_time", columnDefinition = "TIMESTAMPTZ", nullable = false)
+    private LocalDateTime startTime;
 
     @NotNull
     @AllowedDurations
+    @Column(name = "duration_minutes", columnDefinition = "INTEGER")
     private Integer durationMinutes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pharmacist_id", referencedColumnName = "id", nullable = false)
     private Pharmacist pharmacist;
 
-    @OneToOne(mappedBy = "pharmacistAvailability")
+    @OneToOne(mappedBy = "availability")
     private Appointment appointment;
 }

@@ -1,19 +1,16 @@
 package org.pharma.app.pharmaappapi.exceptions;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.InvalidClaimException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.validation.ConstraintViolationException;
 import org.pharma.app.pharmaappapi.payloads.responseDTOs.APIExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.security.SignatureException;
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +61,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
     }
 
+    // It handles Spring MVC exception for denied access
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<APIExceptionResponse> handleAccessDenied(AuthorizationDeniedException e) {
+        String message = e.getMessage();
+        Integer statusCode = HttpStatus.FORBIDDEN.value();
+        APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
+    }
+
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     public ResponseEntity<APIExceptionResponse> customResourceAlreadyExistsException(ResourceAlreadyExistsException e) {
         String message = e.getMessage();
@@ -105,6 +112,8 @@ public class GlobalExceptionHandler {
         String message = e.getMessage();
         Integer statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
         APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
+
+        e.printStackTrace();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
