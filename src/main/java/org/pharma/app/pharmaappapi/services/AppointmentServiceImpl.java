@@ -10,7 +10,10 @@ import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatus;
 import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatusName;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
-import org.pharma.app.pharmaappapi.repositories.*;
+import org.pharma.app.pharmaappapi.repositories.AppointmentRepository;
+import org.pharma.app.pharmaappapi.repositories.AppointmentStatusRepository;
+import org.pharma.app.pharmaappapi.repositories.PatientRepository;
+import org.pharma.app.pharmaappapi.repositories.PharmacistRepository;
 import org.pharma.app.pharmaappapi.repositories.appointmentModalityRepository.AppointmentModalityRepository;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
@@ -18,6 +21,7 @@ import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -51,6 +55,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    @Transactional
     public CreateAppointmentDTO createAppointment(UserDetailsImpl userDetails, CreateAppointmentDTO createAppointmentDTO) {
         UUID userId = userDetails.getId();
         String userRole = userDetails.getAuthorities().iterator().next().getAuthority();
@@ -105,7 +110,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setAppointmentStatus(appointmentStatus);
         appointment.setPatient(patient);
         appointment.setPharmacist(pharmacist);
-        availability.setAppointment(appointment);
+
+        appointment.setAvailability(availability);
 
         Appointment savedAppointment = appointmentRepository.save(appointment);
 
