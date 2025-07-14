@@ -31,7 +31,7 @@ public class AppointmentModalityServiceImpl implements AppointmentModalityServic
                 .findFirstById(modalityId).orElseThrow(() -> new ResourceNotFoundException("Modality", "id", modalityId.toString()));
 
         if (pharmacist.getAvailableModalities().contains(modality)) {
-            throw new ConflictException("Pharmacist already have this appointment modality available");
+            throw new ConflictException("Essa modalidade de consulta já foi registrada");
         }
 
         pharmacist.getAvailableModalities().add(modality);

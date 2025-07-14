@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserInfoDTO signUpPatient(SignUpPatientDTO signUpDTO) {
+    public void signUpPatient(SignUpPatientDTO signUpDTO) {
         String fullName = signUpDTO.getFullName();
         String email = signUpDTO.getEmail();
         String password = signUpDTO.getPassword();
@@ -53,9 +53,9 @@ public class AuthServiceImpl implements AuthService {
         Boolean patientExistsByEmail = authRepository.existsByEmailAndRole_Name(email, RoleName.ROLE_PATIENT);
         Boolean patientExistsByCpf = authRepository.existsByPatient_CpfAndRole_Name(cpf, RoleName.ROLE_PATIENT);
 
-        if (patientExistsByCpf) throw new ResourceAlreadyExistsException("Patient", "cpf", cpf);
-        if (patientExistsByEmail) throw new ResourceAlreadyExistsException("Patient", "email", email);
-        if (!password.equals(passwordConfirmation)) throw new UnprocessableEntityException("Password and password confirmation don't match.");
+        if (patientExistsByCpf) throw new ResourceAlreadyExistsException("Paciente", "cpf", cpf);
+        if (patientExistsByEmail) throw new ResourceAlreadyExistsException("Paciente", "email", email);
+        if (!password.equals(passwordConfirmation)) throw new UnprocessableEntityException("Senhas não coincidem.");
 
         String encodedPassword = passwordEncoder.encode(password);
 
@@ -69,14 +69,7 @@ public class AuthServiceImpl implements AuthService {
         Role role = roleRepository.findFirstByName(RoleName.ROLE_PATIENT);
         user.setRole(role);
 
-        User savedUser = authRepository.save(user);
-
-        UserInfoDTO savedUserInfoDTO = new UserInfoDTO();
-
-        savedUserInfoDTO.setFullName(savedUser.getFullName());
-        savedUserInfoDTO.setEmail(savedUser.getEmail());
-
-        return savedUserInfoDTO;
+        authRepository.save(user);
     }
 
     // TODO: THIS IS A TEMPORARY METHOD - PHARMACIST WILL HAVE ITS OWN API FOR SIGN UP IN FUTURE
