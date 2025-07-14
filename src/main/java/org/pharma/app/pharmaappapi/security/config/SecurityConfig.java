@@ -95,7 +95,8 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
         // Defina os cabeçalhos permitidos (essencial para headers customizados como Authorization)
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+//        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+        configuration.setAllowedHeaders(List.of("*"));
 
         // Permite o envio de credenciais (como cookies) na requisição
         configuration.setAllowCredentials(true);

@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void signUpPatient(SignUpPatientDTO signUpDTO) {
+    public UserInfoDTO signUpPatient(SignUpPatientDTO signUpDTO) {
         String fullName = signUpDTO.getFullName();
         String email = signUpDTO.getEmail();
         String password = signUpDTO.getPassword();
@@ -69,7 +69,14 @@ public class AuthServiceImpl implements AuthService {
         Role role = roleRepository.findFirstByName(RoleName.ROLE_PATIENT);
         user.setRole(role);
 
-        authRepository.save(user);
+        User savedUser = authRepository.save(user);
+
+        UserInfoDTO savedUserInfoDTO = new UserInfoDTO();
+
+        savedUserInfoDTO.setFullName(savedUser.getFullName());
+        savedUserInfoDTO.setEmail(savedUser.getEmail());
+
+        return savedUserInfoDTO;
     }
 
     // TODO: THIS IS A TEMPORARY METHOD - PHARMACIST WILL HAVE ITS OWN API FOR SIGN UP IN FUTURE

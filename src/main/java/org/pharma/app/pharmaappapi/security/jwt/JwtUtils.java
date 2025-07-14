@@ -15,6 +15,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
+import org.springframework.boot.web.server.Cookie.SameSite;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -113,10 +114,13 @@ public class JwtUtils {
         JwtPayloadPatientDTO payload = new JwtPayloadPatientDTO(userDetails.getId(), userDetails.getUsername(), role);
         String jwtToken = buildJwt(payload);
 
+        // TODO: change to secure(true) and sameSite.NONE for production
         return ResponseCookie.from(jwtCookieName, jwtToken)
                 .path("/api")
                 .maxAge(jwtExpTime)
-                .httpOnly(false) // allow js access
+                .httpOnly(true) // avoids js access
+                .secure(false)
+                .sameSite(SameSite.LAX.attributeValue())
                 .build();
     }
 
