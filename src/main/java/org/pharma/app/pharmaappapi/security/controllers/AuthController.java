@@ -31,10 +31,10 @@ public class AuthController {
     }
 
     @PostMapping("/auth/signup/patient")
-    public ResponseEntity<UserInfoDTO> signUpPatient(@RequestBody @Valid SignUpPatientDTO signUpDTO) {
-        UserInfoDTO userInfoDTO = authService.signUpPatient(signUpDTO);
+    public ResponseEntity<?> signUpPatient(@RequestBody @Valid SignUpPatientDTO signUpDTO) {
+        authService.signUpPatient(signUpDTO);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(userInfoDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
     @PostMapping("/auth/signin/patient")

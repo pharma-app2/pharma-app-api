@@ -66,42 +66,42 @@ public class AppointmentServiceImpl implements AppointmentService {
         UUID pharmacistAvailabilityId = createAppointmentDTO.getAvailabilityId();
 
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Patient", "id", patientId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente", "id", patientId.toString()));
 
         Pharmacist pharmacist = pharmacistRepository.findById(pharmacistId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pharmacist", "id", pharmacistId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException("Farmacêutico", "id", pharmacistId.toString()));
 
         if (userRole.equals(RoleName.ROLE_PATIENT.name()) && !patient.getUser().getId().equals(userId)) {
-            throw new ForbiddenException("Patients can only create appointments for himself");
+            throw new ForbiddenException("Pacientes só podem criar consultas para si mesmos");
         }
 
         if (userRole.equals(RoleName.ROLE_PHARMACIST.name()) && !pharmacist.getUser().getId().equals(userId)) {
-            throw new ForbiddenException("Pharmacist can only create appointments for himself");
+            throw new ForbiddenException("Farmacêuticos só podem criar consultas para si mesmos");
         }
 
         AppointmentModality appointmentModality = appointmentModalityRepository.findFirstById(modalityId)
-                .orElseThrow(() -> new ResourceNotFoundException("Modality", "id", modalityId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException("Modalidade", "id", modalityId.toString()));
 
         AppointmentStatus appointmentStatus = appointmentStatusRepository.findFirstByName(DEFAULT_STATUS_NAME)
-                .orElseThrow(() -> new ResourceNotFoundException("Status", "name", DEFAULT_STATUS_NAME));
+                .orElseThrow(() -> new ResourceNotFoundException("Status", "nome", DEFAULT_STATUS_NAME));
 
         Availability availability = pharmacistAvailabilityRepository.findFirstById(pharmacistAvailabilityId)
-                .orElseThrow(() -> new ResourceNotFoundException("Availability", "id", pharmacistAvailabilityId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException("Disponibilidade", "id", pharmacistAvailabilityId.toString()));
 
 
         boolean isModalityAvailable = pharmacist.getAvailableModalities().contains(appointmentModality);
         if (!isModalityAvailable) {
-            throw new ConflictException("This appointment modality is not available for this pharmacist");
+            throw new ConflictException("Modalidade de consulta não disponível para esse farmacêutico");
         }
 
         boolean patientHasAppointment = appointmentRepository.patientAlreadyHasSchedule(patient.getId(),AppointmentStatusName.AGENDADO.name(), AppointmentStatusName.CONFIRMADO.name(), availability.getStartTime());
         if (patientHasAppointment) {
-            throw new ConflictException("Patient already have an appointment");
+            throw new ConflictException("Essa paciente já possui consulta agendada");
         }
 
         // Verifica se a vaga escolhida já está associada a outra consulta.
         if (availability.getAppointment() != null) {
-            throw new ConflictException("This availability slot is already booked.");
+            throw new ConflictException("Esse horário já está agendado");
         }
 
         Appointment appointment = new Appointment();

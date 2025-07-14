@@ -33,7 +33,7 @@ public class RoleAuthenticationProvider implements AuthenticationProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsernameAndRole(username, role);
 
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("Usuário não encontrado");
         }
 
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();

@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return UserDetailsImpl.build(user);
         }
 
-        throw new UsernameNotFoundException("User not found");
+        throw new UsernameNotFoundException("Usuário não encontrado");
     }
 
     @Transactional(readOnly = true)
@@ -39,6 +39,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return UserDetailsImpl.build(user);
         }
 
-        throw new UsernameNotFoundException("User not found");
+        throw new UsernameNotFoundException("Usuário não encontrado");
     }
 }

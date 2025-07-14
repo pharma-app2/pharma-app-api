@@ -58,7 +58,7 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     @Override
     public void createAvailability(UUID userId, AvailabilityCreateDTO availabilityDTO) {
         Pharmacist pharmacist = pharmacistRepository.findFirstByUser_Id(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pharmacist", "id", userId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException("Farmacêutico", "id", userId.toString()));
 
         CustomLocalDateTime startLocalDateTime = availabilityDTO.getStartLocalDateTime();
 
