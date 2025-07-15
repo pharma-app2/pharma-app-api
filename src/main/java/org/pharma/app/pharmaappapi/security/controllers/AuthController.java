@@ -3,6 +3,7 @@ package org.pharma.app.pharmaappapi.security.controllers;
 import jakarta.validation.Valid;
 import org.pharma.app.pharmaappapi.security.DTOs.users.*;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
+import org.pharma.app.pharmaappapi.security.repositories.UserInfoProjection;
 import org.pharma.app.pharmaappapi.security.services.AuthService;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.springframework.http.HttpHeaders;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +25,8 @@ public class AuthController {
 
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ROLE_PHARMACIST', 'ROLE_PATIENT')")
-    public ResponseEntity<UserInfoDTO> getCurrentUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserInfoDTO currentUserInfo = authService.getCurrentUserInfoByUserDetails(userDetails);
+    public ResponseEntity<UserInfoProjection> getCurrentUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserInfoProjection currentUserInfo = authService.getCurrentUserInfoByUserDetails(userDetails);
         return ResponseEntity.status(HttpStatus.OK).body(currentUserInfo);
     }
 
