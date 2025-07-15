@@ -1,6 +1,7 @@
 package org.pharma.app.pharmaappapi.controllers;
 
 import jakarta.validation.Valid;
+import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.AppointmentDTO;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.pharma.app.pharmaappapi.services.AppointmentService;
@@ -10,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -36,5 +38,16 @@ public class AppointmentController {
         CreateAppointmentDTO appointment = appointmentService.createAppointment(userDetails, createAppointmentDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(appointment);
+    }
+
+    @GetMapping("/appointments/patient/future")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public ResponseEntity<Set<AppointmentDTO>> getPatientFutureAppointments(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UUID userId = userDetails.getId();
+
+        Set<AppointmentDTO> appointments = appointmentService.getPatientFutureAppointments(userId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(appointments);
     }
 }
