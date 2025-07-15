@@ -9,6 +9,7 @@ import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
 import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatus;
 import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatusName;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
+import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.AppointmentDTO;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.repositories.AppointmentRepository;
 import org.pharma.app.pharmaappapi.repositories.AppointmentStatusRepository;
@@ -23,7 +24,10 @@ import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -116,5 +120,29 @@ public class AppointmentServiceImpl implements AppointmentService {
         Appointment savedAppointment = appointmentRepository.save(appointment);
 
         return modelMapper.map(savedAppointment, CreateAppointmentDTO.class);
+    }
+
+    @Override
+    public Set<AppointmentDTO> getPatientFutureAppointments(UUID userId) {
+        Patient patient = patientRepository
+                .findFirstByUser_Id(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário", "id", userId.toString()));
+
+        Set<Appointment> appointments = patient.getAppointments().stream().filter(
+                appointment -> {
+                    String booked = AppointmentStatusName.AGENDADO.name();
+                    String confirmed = AppointmentStatusName.CONFIRMADO.name();
+
+                    Boolean isBooked = appointment.getAppointmentStatus().getName().equals(booked);
+                    Boolean isConfirmed = appointment.getAppointmentStatus().getName().equals(confirmed);
+
+                    return isBooked || isConfirmed;
+                }
+        ).collect(Collectors.toSet());
+
+        return appointments
+                .stream()
+                .map(appointment -> modelMapper.map(appointment, AppointmentDTO.class))
+                .collect(Collectors.toSet());
     }
 }
