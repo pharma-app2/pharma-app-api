@@ -33,5 +33,5 @@ public interface AuthRepository extends JpaRepository<User, UUID> {
                     "LEFT JOIN pharmacists ph ON ph.user_id = u.id " +
                     "WHERE u.id = :idPlaceholder;"
     )
-    UserInfoDTO findUserInfosById(@Param("idPlaceholder") UUID id);
+    UserInfoProjection findUserInfosById(@Param("idPlaceholder") UUID id);
 }

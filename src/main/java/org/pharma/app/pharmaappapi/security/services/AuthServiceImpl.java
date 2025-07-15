@@ -1,6 +1,5 @@
 package org.pharma.app.pharmaappapi.security.services;
 
-import org.modelmapper.ModelMapper;
 import org.pharma.app.pharmaappapi.exceptions.ResourceAlreadyExistsException;
 import org.pharma.app.pharmaappapi.exceptions.UnprocessableEntityException;
 import org.pharma.app.pharmaappapi.security.DTOs.users.*;
@@ -8,18 +7,15 @@ import org.pharma.app.pharmaappapi.security.jwt.JwtUtils;
 import org.pharma.app.pharmaappapi.security.models.users.*;
 import org.pharma.app.pharmaappapi.security.repositories.AuthRepository;
 import org.pharma.app.pharmaappapi.security.repositories.RoleRepository;
+import org.pharma.app.pharmaappapi.security.repositories.UserInfoProjection;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -116,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserInfoDTO getCurrentUserInfoByUserDetails(UserDetailsImpl userDetails) {
+    public UserInfoProjection getCurrentUserInfoByUserDetails(UserDetailsImpl userDetails) {
         UUID userId = userDetails.getId();
 
         return authRepository.findUserInfosById(userId);
