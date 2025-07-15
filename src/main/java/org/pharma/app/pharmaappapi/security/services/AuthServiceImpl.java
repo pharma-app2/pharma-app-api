@@ -110,8 +110,9 @@ public class AuthServiceImpl implements AuthService {
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookieFromUserDetails(userDetails);
 
         String role = userDetails.getAuthorities().iterator().next().getAuthority();
+        String fullName = userDetails.getFullName();
 
-        return new LoginResponse(userDetails.getId(), userDetails.getUsername(), role, jwtCookie);
+        return new LoginResponse(userDetails.getId(), userDetails.getUsername(), role, fullName, jwtCookie);
     }
 
     @Override

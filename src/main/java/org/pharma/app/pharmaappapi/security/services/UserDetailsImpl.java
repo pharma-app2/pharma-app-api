@@ -28,6 +28,9 @@ public class UserDetailsImpl implements UserDetails {
 
     private String email;
 
+    @Getter
+    private String fullName;
+
     @JsonIgnore // don't serialize password (sensitive information)
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
@@ -35,13 +38,14 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(User user) {
         UUID id = user.getId();
         String email = user.getEmail();
+        String fullName = user.getFullName();
         String password = user.getPassword();
         Role role = user.getRole(); // we need a transactional operation here (Role from User is LAZY)
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName().name());
         List<SimpleGrantedAuthority> authorities = List.of(authority);
 
-        return new UserDetailsImpl(id, email, password, authorities);
+        return new UserDetailsImpl(id, email, fullName, password, authorities);
     }
 
     @Override

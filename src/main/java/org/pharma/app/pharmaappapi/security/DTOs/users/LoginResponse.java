@@ -8,5 +8,6 @@ public record LoginResponse(
         UUID id,
         String email,
         String role,
+        String fullName,
         ResponseCookie jwtCookie
 ) {}
