@@ -113,7 +113,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setAppointmentModality(appointmentModality);
         appointment.setAppointmentStatus(appointmentStatus);
         appointment.setPatient(patient);
-        appointment.setPharmacist(pharmacist);
 
         appointment.setAvailability(availability);
 

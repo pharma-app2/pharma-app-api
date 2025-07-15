@@ -120,8 +120,5 @@ public class Pharmacist {
     private Set<AppointmentModality> availableModalities = new HashSet<>();
 
     @OneToMany(mappedBy = "pharmacist", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
-    private Set<Appointment> appointments = new HashSet<>();
-
-    @OneToMany(mappedBy = "pharmacist", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     private Set<Availability> availabilities;
 }

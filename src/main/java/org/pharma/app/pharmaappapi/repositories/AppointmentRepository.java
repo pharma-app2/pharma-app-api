@@ -37,7 +37,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
         value = "SELECT EXISTS (" +
                 "SELECT 1 FROM appointments a " +
                 "JOIN pharmacist_availabilities pa ON a.availability_id = pa.id " +
-                "WHERE a.pharmacist_id = :pharmacistId " +
+                "WHERE pa.pharmacist_id = :pharmacistId " +
                 "AND :newAppointmentStart < (pa.start_time + (pa.duration_minutes * INTERVAL '1 minute')) " +
                 "AND :newAppointmentEnd > pa.start_time);"
     )

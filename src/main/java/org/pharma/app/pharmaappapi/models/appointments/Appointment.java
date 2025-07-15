@@ -57,10 +57,6 @@ public class Appointment {
     @JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
     private Patient patient;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pharmacist_id", referencedColumnName = "id", nullable = false)
-    private Pharmacist pharmacist;
-
     @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(
         name = "availability_id", // Nome da coluna FK na tabela 'appointments'
