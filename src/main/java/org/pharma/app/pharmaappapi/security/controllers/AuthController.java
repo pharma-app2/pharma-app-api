@@ -44,6 +44,7 @@ public class AuthController {
         UserInfoDTO userInfoDTO = new UserInfoDTO();
         userInfoDTO.setEmail(response.email());
         userInfoDTO.setRoleName(response.role());
+        userInfoDTO.setFullName(response.fullName());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
