@@ -35,6 +35,10 @@ public class AvailabilityServiceImpl implements AvailabilityService {
         LocalDateTime startTime = params.getStartDate().atStartOfDay();
         LocalDateTime endTime = params.getEndDate().plusDays(1).atStartOfDay();
 
+        pharmacistRepository
+                .findById(pharmacistId)
+                .orElseThrow(() -> new ResourceNotFoundException("Farmacêutico", "id", pharmacistId.toString()));
+
         Set<AvailabilityProjection> availabilitiesByStartAndEndDate = availabilityRepository
                 .findAvailabilitiesByStartAndEndDate(pharmacistId, startTime, endTime);
 
