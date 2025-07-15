@@ -7,10 +7,14 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.pharma.app.pharmaappapi.validations.allowedDurations.AllowedDurations;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvailabilityCreateDTO {
+    private UUID id;
+
     @NotNull
     @ToString.Include
     private CustomLocalDateTime startLocalDateTime;

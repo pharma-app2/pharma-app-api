@@ -17,7 +17,7 @@ public interface AvailabilityRepository extends JpaRepository<Availability, UUID
 
     @Query(
             nativeQuery = true,
-            value = "SELECT pa.start_time, pa.duration_minutes " +
+            value = "SELECT pa.id, pa.start_time, pa.duration_minutes " +
                     "FROM pharmacist_availabilities pa " +
                     "WHERE pa.pharmacist_id = :pharmacistId " +
                     "AND pa.start_time >= :startTimePlaceholder " +

@@ -6,7 +6,7 @@ import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityCreateDTO;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.CustomLocalDateTime;
-import org.pharma.app.pharmaappapi.repositories.AppointmentRepository;
+import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentRepository;
 import org.pharma.app.pharmaappapi.repositories.PharmacistRepository;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityProjection;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityRepository;
@@ -54,7 +54,9 @@ public class AvailabilityServiceImpl implements AvailabilityService {
                     CustomLocalDateTime customLocalDateTime = new CustomLocalDateTime(year, month, day, hour, minute);
                     Integer durationMinutes = avail.getDurationMinutes();
 
-                    return new AvailabilityCreateDTO(customLocalDateTime, durationMinutes);
+                    UUID id = avail.getId();
+
+                    return new AvailabilityCreateDTO(id, customLocalDateTime, durationMinutes);
                 }
         ).collect(Collectors.toSet());
     }

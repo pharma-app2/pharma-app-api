@@ -11,7 +11,8 @@ import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatusName;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.AppointmentDTO;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
-import org.pharma.app.pharmaappapi.repositories.AppointmentRepository;
+import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentProjection;
+import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentRepository;
 import org.pharma.app.pharmaappapi.repositories.AppointmentStatusRepository;
 import org.pharma.app.pharmaappapi.repositories.PatientRepository;
 import org.pharma.app.pharmaappapi.repositories.PharmacistRepository;
@@ -27,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -65,15 +65,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         String userRole = userDetails.getAuthorities().iterator().next().getAuthority();
 
         UUID patientId = createAppointmentDTO.getPatientId();
-        UUID pharmacistId = createAppointmentDTO.getPharmacistId();
         UUID modalityId = createAppointmentDTO.getModalityId();
         UUID pharmacistAvailabilityId = createAppointmentDTO.getAvailabilityId();
+
+        Availability availability = pharmacistAvailabilityRepository.findFirstById(pharmacistAvailabilityId)
+                .orElseThrow(() -> new ResourceNotFoundException("Disponibilidade", "id", pharmacistAvailabilityId.toString()));
 
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente", "id", patientId.toString()));
 
-        Pharmacist pharmacist = pharmacistRepository.findById(pharmacistId)
-                .orElseThrow(() -> new ResourceNotFoundException("Farmacêutico", "id", pharmacistId.toString()));
+        Pharmacist pharmacist = pharmacistRepository
+                .findById(availability.getPharmacist().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Farmacêutico", "id", availability.getPharmacist().getId().toString()));
 
         if (userRole.equals(RoleName.ROLE_PATIENT.name()) && !patient.getUser().getId().equals(userId)) {
             throw new ForbiddenException("Pacientes só podem criar consultas para si mesmos");
@@ -88,10 +91,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         AppointmentStatus appointmentStatus = appointmentStatusRepository.findFirstByName(DEFAULT_STATUS_NAME)
                 .orElseThrow(() -> new ResourceNotFoundException("Status", "nome", DEFAULT_STATUS_NAME));
-
-        Availability availability = pharmacistAvailabilityRepository.findFirstById(pharmacistAvailabilityId)
-                .orElseThrow(() -> new ResourceNotFoundException("Disponibilidade", "id", pharmacistAvailabilityId.toString()));
-
 
         boolean isModalityAvailable = pharmacist.getAvailableModalities().contains(appointmentModality);
         if (!isModalityAvailable) {
@@ -122,26 +121,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Set<AppointmentDTO> getPatientFutureAppointments(UUID userId) {
-        Patient patient = patientRepository
-                .findFirstByUser_Id(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário", "id", userId.toString()));
-
-        Set<Appointment> appointments = patient.getAppointments().stream().filter(
-                appointment -> {
-                    String booked = AppointmentStatusName.AGENDADO.name();
-                    String confirmed = AppointmentStatusName.CONFIRMADO.name();
-
-                    Boolean isBooked = appointment.getAppointmentStatus().getName().equals(booked);
-                    Boolean isConfirmed = appointment.getAppointmentStatus().getName().equals(confirmed);
-
-                    return isBooked || isConfirmed;
-                }
-        ).collect(Collectors.toSet());
-
-        return appointments
-                .stream()
-                .map(appointment -> modelMapper.map(appointment, AppointmentDTO.class))
-                .collect(Collectors.toSet());
+    public Set<AppointmentProjection> getPatientFutureAppointments(UUID userId) {
+        return appointmentRepository.findPatientFutureAppointments(userId);
     }
 }
