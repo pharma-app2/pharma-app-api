@@ -11,6 +11,7 @@ import org.pharma.app.pharmaappapi.models.appointments.Appointment;
 import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.models.healthPlans.HealthPlan;
+import org.pharma.app.pharmaappapi.models.locations.PharmacistLocation;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -54,6 +55,11 @@ public class Pharmacist {
     @Column(name = "crf", nullable = false)
     @ToString.Include
     private String crf;
+
+    @NotNull
+    @Column(name = "accepts_remote", nullable = false)
+    @ToString.Include
+    private Boolean acceptsRemote;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
@@ -121,4 +127,7 @@ public class Pharmacist {
 
     @OneToMany(mappedBy = "pharmacist", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     private Set<Availability> availabilities;
+
+    @OneToMany(mappedBy = "pharmacist", cascade = { CascadeType.ALL }, orphanRemoval = true)
+    private Set<PharmacistLocation> pharmacistLocations;
 }

@@ -59,6 +59,10 @@ public class Patient {
     @ToString.Include
     private LocalDate birthday;
 
+    @NotNull
+    @Column(name = "ibge_api_city_id", nullable = false)
+    private Integer ibgeApiCityId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
     private User user;

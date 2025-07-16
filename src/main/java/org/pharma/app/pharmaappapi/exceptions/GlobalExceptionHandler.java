@@ -52,6 +52,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<APIExceptionResponse> customBadRequestException(BadRequestException e) {
+        String message = e.getMessage();
+        Integer statusCode = HttpStatus.BAD_REQUEST.value();
+        APIExceptionResponse apiResponse = new APIExceptionResponse(message, statusCode);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<APIExceptionResponse> customForbiddenException(ForbiddenException e) {
         String message = e.getMessage();
