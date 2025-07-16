@@ -2,7 +2,7 @@ package org.pharma.app.pharmaappapi.controllers;
 
 import org.pharma.app.pharmaappapi.payloads.appointmentModalityDTOs.AppointmentModalityDTO;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
-import org.pharma.app.pharmaappapi.services.AppointmentModalityService;
+import org.pharma.app.pharmaappapi.services.appointmentModalityService.AppointmentModalityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

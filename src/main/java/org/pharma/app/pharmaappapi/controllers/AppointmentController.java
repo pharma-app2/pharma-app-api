@@ -1,11 +1,10 @@
 package org.pharma.app.pharmaappapi.controllers;
 
 import jakarta.validation.Valid;
-import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.AppointmentDTO;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentProjection;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
-import org.pharma.app.pharmaappapi.services.AppointmentService;
+import org.pharma.app.pharmaappapi.services.appointmentService.AppointmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

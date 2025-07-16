@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.services;
+package org.pharma.app.pharmaappapi.services.availabilityService;
 
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityCreateDTO;

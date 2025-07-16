@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.services;
+package org.pharma.app.pharmaappapi.services.availabilityService;
 
 import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;

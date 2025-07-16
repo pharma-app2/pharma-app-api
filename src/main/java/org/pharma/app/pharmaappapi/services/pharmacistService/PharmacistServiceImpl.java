@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.services;
+package org.pharma.app.pharmaappapi.services.pharmacistService;
 
 import org.modelmapper.ModelMapper;
 import org.pharma.app.pharmaappapi.exceptions.BadRequestException;

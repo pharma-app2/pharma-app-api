@@ -1,6 +1,5 @@
-package org.pharma.app.pharmaappapi.services;
+package org.pharma.app.pharmaappapi.services.appointmentService;
 
-import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.AppointmentDTO;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentProjection;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;

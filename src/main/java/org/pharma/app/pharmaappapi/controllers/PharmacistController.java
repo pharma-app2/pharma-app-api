@@ -1,10 +1,9 @@
 package org.pharma.app.pharmaappapi.controllers;
 
 import jakarta.validation.Valid;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.pharma.app.pharmaappapi.payloads.pharmacistDTOs.PharmacistDTO;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
-import org.pharma.app.pharmaappapi.services.PharmacistService;
+import org.pharma.app.pharmaappapi.services.pharmacistService.PharmacistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

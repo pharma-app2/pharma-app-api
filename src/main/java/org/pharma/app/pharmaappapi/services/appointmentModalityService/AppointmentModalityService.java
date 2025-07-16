@@ -1,4 +1,4 @@
-package org.pharma.app.pharmaappapi.services;
+package org.pharma.app.pharmaappapi.services.appointmentModalityService;
 
 import org.pharma.app.pharmaappapi.payloads.appointmentModalityDTOs.AppointmentModalityDTO;
 
