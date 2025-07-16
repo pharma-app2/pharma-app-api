@@ -8,7 +8,7 @@ import org.springframework.http.ResponseCookie;
 public interface AuthService {
     void signUpPatient(SignUpPatientDTO signUpDTO);
     void signUpPharmacist(SignUpPharmacistDTO signUpDTO);
-    LoginResponse signInUser(SignInDTO signInDTO, RoleName roleName);
+    UserInfoDTO signInUser(SignInDTO signInDTO, RoleName roleName);
     UserInfoProjection getCurrentUserInfoByUserDetails(UserDetailsImpl userDetails);
     ResponseCookie getCleanJwtCookie();
 }

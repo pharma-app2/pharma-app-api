@@ -27,7 +27,7 @@ public class AvailabilityController {
 
     @GetMapping("/pharmacists/{pharmacist_id}/availabilities")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    public ResponseEntity<Set<AvailabilityCreateDTO>> getAvailabilities(
+    public ResponseEntity<Set<AvailabilityCreateDTO>> getAvailabilitiesFromPharmacist(
             @PathVariable UUID pharmacist_id,
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
@@ -36,9 +36,25 @@ public class AvailabilityController {
                 .withStartDate(startDate)
                 .withEndDate(endDate)
                 .build();
-        Set<AvailabilityCreateDTO> availabilities = availabilityService.getAvailabilities(pharmacist_id, params);
+        Set<AvailabilityCreateDTO> availabilities = availabilityService.getAvailabilitiesFromPharmacist(pharmacist_id, params);
 
         return ResponseEntity.status(HttpStatus.OK).body(availabilities);
+    }
+
+    @GetMapping("/availabilities/search")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public ResponseEntity<Set<AvailabilityCreateDTO>> getAvailabilities(
+            @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        AvailabilityParameters params = new AvailabilityParameters
+                .Builder()
+                .withStartDate(startDate)
+                .withEndDate(endDate)
+                .build();
+
+//        Set<AvailabilityCreateDTO> availabilities = availabilityService.getAvailabilities(pharmacist_id, params);
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("/pharmacists/availabilities")
