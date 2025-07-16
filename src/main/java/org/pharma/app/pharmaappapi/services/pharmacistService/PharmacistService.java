@@ -1,6 +1,5 @@
-package org.pharma.app.pharmaappapi.services;
+package org.pharma.app.pharmaappapi.services.pharmacistService;
 
-import jakarta.validation.Valid;
 import org.pharma.app.pharmaappapi.payloads.pharmacistDTOs.PharmacistDTO;
 
 import java.util.UUID;

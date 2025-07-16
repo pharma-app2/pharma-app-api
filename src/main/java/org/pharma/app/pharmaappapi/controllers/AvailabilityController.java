@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityCreateDTO;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
-import org.pharma.app.pharmaappapi.services.AvailabilityService;
+import org.pharma.app.pharmaappapi.services.availabilityService.AvailabilityService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
