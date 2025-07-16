@@ -31,7 +31,7 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     }
 
     @Override
-    public Set<AvailabilityCreateDTO> getAvailabilities(UUID pharmacistId, AvailabilityParameters params) {
+    public Set<AvailabilityCreateDTO> getAvailabilitiesFromPharmacist(UUID pharmacistId, AvailabilityParameters params) {
         LocalDateTime startTime = params.getStartDate().atStartOfDay();
         LocalDateTime endTime = params.getEndDate().plusDays(1).atStartOfDay();
 

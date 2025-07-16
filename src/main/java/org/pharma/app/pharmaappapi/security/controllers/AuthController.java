@@ -39,27 +39,32 @@ public class AuthController {
 
     @PostMapping("/auth/signin/patient")
     public ResponseEntity<UserInfoDTO> signInPatient(@RequestBody @Valid SignInDTO signInDTO) {
-        LoginResponse response = authService.signInUser(signInDTO, RoleName.ROLE_PATIENT);
+        UserInfoDTO response = authService.signInUser(signInDTO, RoleName.ROLE_PATIENT);
 
         UserInfoDTO userInfoDTO = new UserInfoDTO();
-        userInfoDTO.setEmail(response.email());
-        userInfoDTO.setRoleName(response.role());
-        userInfoDTO.setFullName(response.fullName());
+        userInfoDTO.setEmail(response.getEmail());
+        userInfoDTO.setRole(response.getRole());
+        userInfoDTO.setFullName(response.getFullName());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, response.jwtCookie().toString())
+                .header(HttpHeaders.SET_COOKIE, response.getJwtCookie().toString())
                 .body(userInfoDTO);
     }
 
     @PostMapping("/auth/signin/pharmacist")
-    public ResponseEntity<LoginResponse> signInPharmacist(@RequestBody @Valid SignInDTO signInDTO) {
-        LoginResponse response = authService.signInUser(signInDTO, RoleName.ROLE_PHARMACIST);
+    public ResponseEntity<UserInfoDTO> signInPharmacist(@RequestBody @Valid SignInDTO signInDTO) {
+        UserInfoDTO response = authService.signInUser(signInDTO, RoleName.ROLE_PHARMACIST);
+
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+        userInfoDTO.setEmail(response.getEmail());
+        userInfoDTO.setRole(response.getRole());
+        userInfoDTO.setFullName(response.getFullName());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, response.jwtCookie().toString())
-                .body(response);
+                .header(HttpHeaders.SET_COOKIE, response.getJwtCookie().toString())
+                .body(userInfoDTO);
     }
 
     @PostMapping("/auth/signup/pharmacist")

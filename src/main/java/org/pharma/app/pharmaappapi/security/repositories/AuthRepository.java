@@ -1,6 +1,5 @@
 package org.pharma.app.pharmaappapi.security.repositories;
 
-import org.pharma.app.pharmaappapi.security.DTOs.users.UserInfoDTO;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
 import org.pharma.app.pharmaappapi.security.models.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;

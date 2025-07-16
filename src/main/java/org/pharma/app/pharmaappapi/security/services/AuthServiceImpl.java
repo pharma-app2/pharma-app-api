@@ -91,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponse signInUser(SignInDTO signInDTO, RoleName roleName) {
+    public UserInfoDTO signInUser(SignInDTO signInDTO, RoleName roleName) {
         String email = signInDTO.getEmail();
         String password = signInDTO.getPassword();
 
@@ -108,7 +108,14 @@ public class AuthServiceImpl implements AuthService {
         String role = userDetails.getAuthorities().iterator().next().getAuthority();
         String fullName = userDetails.getFullName();
 
-        return new LoginResponse(userDetails.getId(), userDetails.getUsername(), role, fullName, jwtCookie);
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+
+        userInfoDTO.setJwtCookie(jwtCookie);
+        userInfoDTO.setEmail(email);
+        userInfoDTO.setFullName(fullName);
+        userInfoDTO.setRole(role);
+
+        return userInfoDTO;
     }
 
     @Override

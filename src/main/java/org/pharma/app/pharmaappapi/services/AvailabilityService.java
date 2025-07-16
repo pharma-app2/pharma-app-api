@@ -8,5 +8,5 @@ import java.util.UUID;
 
 public interface AvailabilityService {
     void createAvailability(UUID userId, AvailabilityCreateDTO pharmacistAvailabilityDTO);
-    Set<AvailabilityCreateDTO> getAvailabilities(UUID pharmacistId, AvailabilityParameters params);
+    Set<AvailabilityCreateDTO> getAvailabilitiesFromPharmacist(UUID pharmacistId, AvailabilityParameters params);
 }
