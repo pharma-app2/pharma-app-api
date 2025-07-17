@@ -25,10 +25,19 @@ public class PharmacistDTO {
     private String crf;
 
     @NotNull
+    private String fullName;
+
+    @NotNull
+    private String email;
+
+    @NotNull
+    private Set<String> modalities;
+
+    @NotNull
     private Boolean acceptsRemote;
 
     @NotNull
-    private Set<UUID> healthPlanIds;
+    private Set<String> healthPlanNames;
 
     @NotNull
     private Set<PharmacistLocationDTO> pharmacistLocations;

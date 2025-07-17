@@ -4,7 +4,7 @@ import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
 import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
 import org.pharma.app.pharmaappapi.payloads.appointmentModalityDTOs.AppointmentModalityDTO;
-import org.pharma.app.pharmaappapi.repositories.PharmacistRepository;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.PharmacistRepository;
 import org.pharma.app.pharmaappapi.repositories.appointmentModalityRepository.AppointmentModalityRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.springframework.stereotype.Service;
