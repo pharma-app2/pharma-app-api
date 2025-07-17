@@ -19,7 +19,7 @@ public interface PharmacistRepository extends JpaRepository<Pharmacist, UUID> {
             nativeQuery = true,
             value = "SELECT u.full_name AS fullName, u.email, p.crf, p.accepts_remote, hp.plan_name AS planName, " +
                     "pl.address, pl.phone1, pl.phone2, pl.phone3, pl.ibge_api_city_id AS ibgeApiCityId, " +
-                    "am.name AS modality " +
+                    "pl.ibge_api_city AS ibgeApiCity, pl.ibge_api_state AS ibgeApiState, am.name AS modality " +
                     "FROM users u " +
                     "LEFT JOIN pharmacists p ON u.id = p.user_id " +
                     "LEFT JOIN health_plans_pharmacists hpp ON hpp.pharmacist_id = p.id " +

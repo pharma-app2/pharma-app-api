@@ -40,4 +40,10 @@ public class PharmacistLocationDTO {
     // we can't add a suffix/prefix "id" due to intelligent mapping from modelMapper
     @NotNull
     private Integer ibgeApiIdentifierCity;
+
+    @NotNull
+    private String ibgeApiCity;
+
+    @NotNull
+    private String ibgeApiState;
 }

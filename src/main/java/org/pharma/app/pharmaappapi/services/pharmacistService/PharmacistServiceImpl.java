@@ -129,6 +129,8 @@ public class PharmacistServiceImpl implements PharmacistService {
             pharmacistLocationDTO.setPhone2(projection.getPhone2());
             pharmacistLocationDTO.setPhone3(projection.getPhone3());
             pharmacistLocationDTO.setIbgeApiIdentifierCity(projection.getIbgeApiCityId());
+            pharmacistLocationDTO.setIbgeApiCity(projection.getIbgeApiCity());
+            pharmacistLocationDTO.setIbgeApiState(projection.getIbgeApiState());
 
             healthPlanNames.add(projection.getPlanName());
             locationDTOs.add(pharmacistLocationDTO);
