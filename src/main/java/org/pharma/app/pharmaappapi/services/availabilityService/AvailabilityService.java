@@ -1,7 +1,8 @@
 package org.pharma.app.pharmaappapi.services.availabilityService;
 
-import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityCreateDTO;
+import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
+import org.pharma.app.pharmaappapi.payloads.pharmacistDTOs.ProfileSearchParamsDTO;
 
 import java.util.Set;
 import java.util.UUID;

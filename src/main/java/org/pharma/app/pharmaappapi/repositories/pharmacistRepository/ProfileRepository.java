@@ -5,14 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 @Repository
-public interface PharmacistRepository extends JpaRepository<Pharmacist, UUID> {
+public interface ProfileRepository extends JpaRepository<Pharmacist, UUID>, ProfileRepositoryCustom {
     Optional<Pharmacist> findFirstByUser_Id(UUID userId);
 
     @Query(
@@ -30,5 +29,4 @@ public interface PharmacistRepository extends JpaRepository<Pharmacist, UUID> {
                     "WHERE u.id = :userIdPlaceholder;"
     )
     Set<PharmacistProfileFlatProjection> findPharmacistProfile(@Param("userIdPlaceholder") UUID userId);
-
 }
