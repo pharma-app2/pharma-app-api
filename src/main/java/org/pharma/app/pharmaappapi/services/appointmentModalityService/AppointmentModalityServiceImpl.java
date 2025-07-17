@@ -4,7 +4,7 @@ import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
 import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
 import org.pharma.app.pharmaappapi.payloads.appointmentModalityDTOs.AppointmentModalityDTO;
-import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.PharmacistRepository;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.ProfileRepository;
 import org.pharma.app.pharmaappapi.repositories.appointmentModalityRepository.AppointmentModalityRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.springframework.stereotype.Service;
@@ -15,9 +15,9 @@ import java.util.UUID;
 @Service
 public class AppointmentModalityServiceImpl implements AppointmentModalityService {
     private final AppointmentModalityRepository appointmentModalityRepository;
-    private final PharmacistRepository pharmacistRepository;
+    private final ProfileRepository pharmacistRepository;
 
-    public AppointmentModalityServiceImpl(AppointmentModalityRepository appointmentModalityRepository, PharmacistRepository pharmacistRepository) {
+    public AppointmentModalityServiceImpl(AppointmentModalityRepository appointmentModalityRepository, ProfileRepository pharmacistRepository) {
         this.appointmentModalityRepository = appointmentModalityRepository;
         this.pharmacistRepository = pharmacistRepository;
     }

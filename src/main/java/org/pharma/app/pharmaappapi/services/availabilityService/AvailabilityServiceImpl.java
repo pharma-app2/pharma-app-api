@@ -7,7 +7,7 @@ import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityCreateD
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.CustomLocalDateTime;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentRepository;
-import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.PharmacistRepository;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.ProfileRepository;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityProjection;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
 @Service
 public class AvailabilityServiceImpl implements AvailabilityService {
     private final AvailabilityRepository availabilityRepository;
-    private final PharmacistRepository pharmacistRepository;
+    private final ProfileRepository pharmacistRepository;
     private final AppointmentRepository appointmentRepository;
 
-    public AvailabilityServiceImpl(AvailabilityRepository availabilityRepository, PharmacistRepository pharmacistRepository, AppointmentRepository appointmentRepository) {
+    public AvailabilityServiceImpl(AvailabilityRepository availabilityRepository, ProfileRepository pharmacistRepository, AppointmentRepository appointmentRepository) {
         this.availabilityRepository = availabilityRepository;
         this.pharmacistRepository = pharmacistRepository;
         this.appointmentRepository = appointmentRepository;

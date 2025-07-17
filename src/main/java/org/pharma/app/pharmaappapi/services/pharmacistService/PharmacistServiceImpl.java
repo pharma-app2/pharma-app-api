@@ -8,26 +8,30 @@ import org.pharma.app.pharmaappapi.models.appointments.AppointmentModalityName;
 import org.pharma.app.pharmaappapi.models.healthPlans.HealthPlan;
 import org.pharma.app.pharmaappapi.models.locations.PharmacistLocation;
 import org.pharma.app.pharmaappapi.payloads.pharmacistDTOs.PharmacistDTO;
+import org.pharma.app.pharmaappapi.payloads.pharmacistDTOs.ProfileSearchParamsDTO;
 import org.pharma.app.pharmaappapi.payloads.pharmacistLocationDTOs.PharmacistLocationDTO;
 import org.pharma.app.pharmaappapi.repositories.appointmentModalityRepository.AppointmentModalityRepository;
-import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.PharmacistProfileFlatProjection;
-import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.PharmacistRepository;
 import org.pharma.app.pharmaappapi.repositories.healthPlanRepository.HealthPlanRepository;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.PharmacistProfileFlatProjection;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.ProfileByParamsProjection;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.ProfileRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class PharmacistServiceImpl implements PharmacistService {
-    private final PharmacistRepository pharmacistRepository;
+    private final ProfileRepository pharmacistRepository;
     private final HealthPlanRepository healthPlanRepository;
     private final AppointmentModalityRepository appointmentModalityRepository;
     private final ModelMapper modelMapper;
 
     public PharmacistServiceImpl(
-            PharmacistRepository pharmacistRepository,
+            ProfileRepository pharmacistRepository,
             HealthPlanRepository healthPlanRepository,
             AppointmentModalityRepository appointmentModalityRepository,
             ModelMapper modelMapper) {
@@ -114,6 +118,33 @@ public class PharmacistServiceImpl implements PharmacistService {
         savedProfileDTO.setFullName(fullName);
 
         return savedProfileDTO;
+    }
+
+    @Override
+    public Set<ProfileSearchParamsDTO> getProfilesByParams(ProfileSearchParamsDTO params) {
+        String pharmacistName = params.getPharmacistName();
+        String ibgeApiCity = params.getIbgeApiCity();
+        String ibgeApiState = params.getIbgeApiState();
+        boolean acceptsRemote = Boolean.parseBoolean(params.getAcceptsRemote());
+
+        Set<ProfileByParamsProjection> availabilities = pharmacistRepository
+                .findProfilesByParams(pharmacistName, ibgeApiCity, ibgeApiState, acceptsRemote);
+
+        Set<ProfileSearchParamsDTO> dtos = new HashSet<>();
+
+        availabilities.forEach(availability -> {
+            ProfileSearchParamsDTO availabilitySearchParamsDTO = new ProfileSearchParamsDTO();
+
+            availabilitySearchParamsDTO.setPharmacistName(availability.pharmacistName());
+            availabilitySearchParamsDTO.setIbgeApiCity(availability.ibgeApiCity());
+            availabilitySearchParamsDTO.setIbgeApiState(availability.ibgeApiState());
+            availabilitySearchParamsDTO.setAddress(availability.address());
+            availabilitySearchParamsDTO.setAcceptsRemote(availability.acceptsRemote().toString());
+
+            dtos.add(availabilitySearchParamsDTO);
+        });
+
+        return dtos;
     }
 
     private PharmacistDTO mapToNested(Set<PharmacistProfileFlatProjection> flatResults) {

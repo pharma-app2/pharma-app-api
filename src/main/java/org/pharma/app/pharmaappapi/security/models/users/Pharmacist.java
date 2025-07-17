@@ -7,16 +7,29 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.pharma.app.pharmaappapi.models.appointments.Appointment;
 import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.models.healthPlans.HealthPlan;
 import org.pharma.app.pharmaappapi.models.locations.PharmacistLocation;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.ProfileByParamsProjection;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@SqlResultSetMapping(
+    name = "ProfileByParamsProjectionMapping",
+    classes = @ConstructorResult( // resultado será um DTO/record.
+        targetClass = ProfileByParamsProjection.class, //  classe de destino.
+        columns = { // 4. Mapeia cada coluna/alias do seu SELECT para um parâmetro do construtor do DTO.
+            @ColumnResult(name = "pharmacistName", type = String.class),
+            @ColumnResult(name = "address", type = String.class),
+            @ColumnResult(name = "acceptsRemote", type = Boolean.class),
+            @ColumnResult(name = "ibgeApiCity", type = String.class),
+            @ColumnResult(name = "ibgeApiState", type = String.class)
+        }
+    )
+)
 @Entity
 @Table(
         name = "pharmacists",

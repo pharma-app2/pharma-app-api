@@ -14,7 +14,7 @@ import org.pharma.app.pharmaappapi.repositories.appointmentRepository.Appointmen
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentRepository;
 import org.pharma.app.pharmaappapi.repositories.AppointmentStatusRepository;
 import org.pharma.app.pharmaappapi.repositories.PatientRepository;
-import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.PharmacistRepository;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.ProfileRepository;
 import org.pharma.app.pharmaappapi.repositories.appointmentModalityRepository.AppointmentModalityRepository;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
@@ -35,7 +35,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentModalityRepository appointmentModalityRepository;
     private final AppointmentStatusRepository appointmentStatusRepository;
-    private final PharmacistRepository pharmacistRepository;
+    private final ProfileRepository pharmacistRepository;
     private final PatientRepository patientRepository;
     private final AvailabilityRepository pharmacistAvailabilityRepository;
 
@@ -44,7 +44,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             AppointmentRepository appointmentRepository,
             AppointmentModalityRepository appointmentModalityRepository,
             AppointmentStatusRepository appointmentStatusRepository,
-            PharmacistRepository pharmacistRepository,
+            ProfileRepository pharmacistRepository,
             PatientRepository patientRepository,
             AvailabilityRepository pharmacistAvailabilityRepository) {
         this.modelMapper = modelMapper;
