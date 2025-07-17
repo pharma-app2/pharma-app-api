@@ -6,4 +6,5 @@ import java.util.UUID;
 
 public interface PharmacistService {
     PharmacistDTO updatePharmacistProfile(UUID userId, PharmacistDTO pharmacistDTO);
+    PharmacistDTO getPharmacistProfile(UUID userId);
 }

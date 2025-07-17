@@ -3,11 +3,15 @@ package org.pharma.app.pharmaappapi.services.pharmacistService;
 import org.modelmapper.ModelMapper;
 import org.pharma.app.pharmaappapi.exceptions.BadRequestException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
+import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
+import org.pharma.app.pharmaappapi.models.appointments.AppointmentModalityName;
 import org.pharma.app.pharmaappapi.models.healthPlans.HealthPlan;
 import org.pharma.app.pharmaappapi.models.locations.PharmacistLocation;
 import org.pharma.app.pharmaappapi.payloads.pharmacistDTOs.PharmacistDTO;
 import org.pharma.app.pharmaappapi.payloads.pharmacistLocationDTOs.PharmacistLocationDTO;
-import org.pharma.app.pharmaappapi.repositories.PharmacistRepository;
+import org.pharma.app.pharmaappapi.repositories.appointmentModalityRepository.AppointmentModalityRepository;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.PharmacistProfileFlatProjection;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.PharmacistRepository;
 import org.pharma.app.pharmaappapi.repositories.healthPlanRepository.HealthPlanRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.springframework.stereotype.Service;
@@ -19,22 +23,36 @@ import java.util.stream.Collectors;
 public class PharmacistServiceImpl implements PharmacistService {
     private final PharmacistRepository pharmacistRepository;
     private final HealthPlanRepository healthPlanRepository;
+    private final AppointmentModalityRepository appointmentModalityRepository;
     private final ModelMapper modelMapper;
 
     public PharmacistServiceImpl(
             PharmacistRepository pharmacistRepository,
             HealthPlanRepository healthPlanRepository,
+            AppointmentModalityRepository appointmentModalityRepository,
             ModelMapper modelMapper) {
         this.pharmacistRepository = pharmacistRepository;
         this.healthPlanRepository = healthPlanRepository;
+        this.appointmentModalityRepository = appointmentModalityRepository;
         this.modelMapper = modelMapper;
+    }
+
+    @Override
+    public PharmacistDTO getPharmacistProfile(UUID userId) {
+        Set<PharmacistProfileFlatProjection> pharmacistProfile = pharmacistRepository.findPharmacistProfile(userId);
+        return mapToNested(pharmacistProfile);
     }
 
     @Override
     public PharmacistDTO updatePharmacistProfile(UUID userId, PharmacistDTO pharmacistDTO) {
         Set<PharmacistLocationDTO> pharmacistLocationDTOS = pharmacistDTO.getPharmacistLocations();
         String crf = pharmacistDTO.getCrf();
-        Set<UUID> healthPlanIds = pharmacistDTO.getHealthPlanIds();
+        String email = pharmacistDTO.getEmail();
+        String fullName = pharmacistDTO.getFullName();
+
+        Set<String> modalities = pharmacistDTO.getModalities();
+
+        Set<String> healthPlanNames = pharmacistDTO.getHealthPlanNames();
         Boolean acceptsRemote = pharmacistDTO.getAcceptsRemote();
 
         Pharmacist pharmacist = pharmacistRepository
@@ -42,7 +60,26 @@ public class PharmacistServiceImpl implements PharmacistService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário", "id", userId.toString()));
 
         pharmacist.setAcceptsRemote(acceptsRemote);
+        pharmacist.getUser().setEmail(email);
+        pharmacist.getUser().setFullName(fullName);
         pharmacist.setCrf(crf);
+
+        Set<AppointmentModalityName> names = modalities
+                .stream()
+                .map(AppointmentModalityName::valueOf)
+                .collect(Collectors.toSet());
+        Set<AppointmentModality> dbModalities = appointmentModalityRepository.findAllByNameIn(names);
+
+        if (dbModalities.size() != modalities.size()) {
+            throw new BadRequestException("Um ou mais nomes de modalidades de consulta são inválidos");
+        }
+
+        pharmacist.getAvailableModalities().clear();
+        pharmacist.getAvailableModalities().addAll(dbModalities);
+
+        if (!modalities.contains(AppointmentModalityName.TELECONSULTA.name())) {
+            pharmacist.setAcceptsRemote(false); // ensures that pharmacist doesn't mistakenly forget to set acceptsRemote as false
+        }
 
         Set<PharmacistLocation> newLocations = pharmacistLocationDTOS
                 .stream()
@@ -57,19 +94,68 @@ public class PharmacistServiceImpl implements PharmacistService {
         existingLocations.clear();
         existingLocations.addAll(newLocations);
 
-        Set<HealthPlan> newHealthPlans = new HashSet<>(healthPlanRepository.findAllById(healthPlanIds));
-        if (newHealthPlans.size() != healthPlanIds.size()) {
-            throw new BadRequestException("Um ou mais ids de plano de saúde são inválidos");
+        Set<HealthPlan> dbHealthPlans = healthPlanRepository.findAllByPlanNameIn(healthPlanNames);
+        if (dbHealthPlans.size() != healthPlanNames.size()) {
+            throw new BadRequestException("Um ou mais nomes de plano de saúde são inválidos");
         }
 
         pharmacist.getHealthPlans().clear();
-        pharmacist.getHealthPlans().addAll(newHealthPlans);
-        for (HealthPlan healthPlan: newHealthPlans) {
+        pharmacist.getHealthPlans().addAll(dbHealthPlans);
+        for (HealthPlan healthPlan: dbHealthPlans) {
             healthPlan.getPharmacists().add(pharmacist);
         }
 
-        Pharmacist savedPharmacist = pharmacistRepository.save(pharmacist);
+        Pharmacist savedProfile = pharmacistRepository.save(pharmacist);
+        PharmacistDTO savedProfileDTO = modelMapper.map(savedProfile, PharmacistDTO.class);
 
-        return modelMapper.map(savedPharmacist, PharmacistDTO.class);
+        savedProfileDTO.setHealthPlanNames(healthPlanNames);
+        savedProfileDTO.setModalities(modalities);
+        savedProfileDTO.setEmail(email);
+        savedProfileDTO.setFullName(fullName);
+
+        return savedProfileDTO;
+    }
+
+    private PharmacistDTO mapToNested(Set<PharmacistProfileFlatProjection> flatResults) {
+        Set<PharmacistLocationDTO> locationDTOs = new HashSet<>();
+        Set<String> modalities = new HashSet<>();
+        Set<String> healthPlanNames = new HashSet<>();
+
+        flatResults.forEach(projection -> {
+            PharmacistLocationDTO pharmacistLocationDTO = new PharmacistLocationDTO();
+
+            pharmacistLocationDTO.setAddress(projection.getAddress());
+            pharmacistLocationDTO.setPhone1(projection.getPhone1());
+            pharmacistLocationDTO.setPhone2(projection.getPhone2());
+            pharmacistLocationDTO.setPhone3(projection.getPhone3());
+            pharmacistLocationDTO.setIbgeApiIdentifierCity(projection.getIbgeApiCityId());
+
+            healthPlanNames.add(projection.getPlanName());
+            locationDTOs.add(pharmacistLocationDTO);
+            modalities.add(projection.getModality());
+        });
+
+        PharmacistProfileFlatProjection profile = flatResults
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Perfil não encontrado"));
+
+        String fullName = profile.getFullName();
+        String email = profile.getEmail();
+        String crf = profile.getCrf();
+        Boolean acceptsRemote = profile.getAcceptsRemote();
+
+        PharmacistDTO pharmacistDTO = new PharmacistDTO();
+
+        pharmacistDTO.setPharmacistLocations(locationDTOs);
+        pharmacistDTO.setModalities(modalities);
+        pharmacistDTO.setHealthPlanNames(healthPlanNames);
+
+        pharmacistDTO.setFullName(fullName);
+        pharmacistDTO.setEmail(email);
+        pharmacistDTO.setCrf(crf);
+        pharmacistDTO.setAcceptsRemote(acceptsRemote);
+
+        return pharmacistDTO;
     }
 }

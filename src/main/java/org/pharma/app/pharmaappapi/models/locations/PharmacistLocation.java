@@ -36,6 +36,7 @@ public class PharmacistLocation {
             message = "Phone number must have between 8 and 15 characters"
     )
     @Column(name = "phone1", nullable = false, length = 15)
+    @EqualsAndHashCode.Include
     private String phone1;
 
     @Size(
@@ -44,6 +45,7 @@ public class PharmacistLocation {
             message = "Phone number must have between 8 and 15 characters"
     )
     @Column(name = "phone2", length = 15)
+    @EqualsAndHashCode.Include
     private String phone2;
 
     @Size(
@@ -52,6 +54,7 @@ public class PharmacistLocation {
             message = "Phone number must have between 8 and 15 characters"
     )
     @Column(name = "phone3", length = 15)
+    @EqualsAndHashCode.Include
     private String phone3;
 
     @NotNull
@@ -62,10 +65,12 @@ public class PharmacistLocation {
             message = "Address must have between 10 and 255 characters"
     )
     @Column(name = "address", nullable = false)
+    @EqualsAndHashCode.Include
     private String address;
 
     @NotNull
     @Column(name = "ibge_api_city_id", nullable = false)
+    @EqualsAndHashCode.Include
     private Integer ibgeApiIdentifierCity;
 
     @ManyToOne(fetch = FetchType.LAZY)
