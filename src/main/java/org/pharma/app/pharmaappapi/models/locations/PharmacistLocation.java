@@ -73,6 +73,16 @@ public class PharmacistLocation {
     @EqualsAndHashCode.Include
     private Integer ibgeApiIdentifierCity;
 
+    @NotNull
+    @Column(name = "ibge_api_city", nullable = false, columnDefinition = "VARCHAR(100)")
+    @EqualsAndHashCode.Include
+    private String ibgeApiCity;
+
+    @NotNull
+    @Column(name = "ibge_api_state", nullable = false, columnDefinition = "VARCHAR(100)")
+    @EqualsAndHashCode.Include
+    private String ibgeApiState;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pharmacist_id", referencedColumnName = "id", nullable = false)
     private Pharmacist pharmacist;
