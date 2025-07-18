@@ -62,7 +62,25 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
                     "WHERE pt.user_id = :userIdPlaceholder " +
                     "AND aps.name IN ('AGENDADO', 'CONFIRMADO');"
     )
-    Set<AppointmentProjection> findPatientFutureAppointments(
-            @Param("userIdPlaceholder") UUID patientId
+    Set<AppointmentPatientProjection> findPatientFutureAppointments(
+            @Param("userIdPlaceholder") UUID userId
+    );
+
+    @Query(
+            nativeQuery = true,
+            value = "SELECT a.id, u_patient.full_name AS patientName, pa.start_time AS startTime, " +
+                    "pa.duration_minutes AS durationMinutes, aps.name AS status, am.name AS modality " +
+                    "FROM appointments a " +
+                    "LEFT JOIN appointments_status aps ON aps.id = a.appointments_status_id " +
+                    "LEFT JOIN appointments_modality am ON am.id = a.appointments_modality_id " +
+                    "LEFT JOIN patients pt ON pt.id = a.patient_id " +
+                    "LEFT JOIN pharmacist_availabilities pa ON pa.id = a.availability_id " +
+                    "LEFT JOIN pharmacists p ON p.id = pa.pharmacist_id " +
+                    "LEFT JOIN users u_patient ON u_patient.id = pt.user_id " +
+                    "WHERE p.user_id = :userIdPlaceholder " +
+                    "AND aps.name IN ('AGENDADO', 'CONFIRMADO');"
+    )
+    Set<AppointmentPharmacistProjection> findPharmacistFutureAppointments(
+            @Param("userIdPlaceholder") UUID userId
     );
 }

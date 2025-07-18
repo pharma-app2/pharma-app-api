@@ -2,11 +2,11 @@ package org.pharma.app.pharmaappapi.services.availabilityService;
 
 import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
+import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatusName;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
-import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityCreateDTO;
-import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
-import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.CustomLocalDateTime;
+import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.*;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentRepository;
+import org.pharma.app.pharmaappapi.repositories.availabilityRepository.OwnAvailabilityProjection;
 import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.ProfileRepository;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityProjection;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityRepository;
@@ -28,6 +28,21 @@ public class AvailabilityServiceImpl implements AvailabilityService {
         this.availabilityRepository = availabilityRepository;
         this.pharmacistRepository = pharmacistRepository;
         this.appointmentRepository = appointmentRepository;
+    }
+
+    @Override
+    public Set<OwnAvailabilityDTO> getOwnAvailabilities(UUID userId, AvailabilityParameters params) {
+        LocalDateTime startTime = params.getStartDate().atStartOfDay();
+        LocalDateTime endTime = params.getEndDate().plusDays(1).atStartOfDay();
+
+        Pharmacist pharmacist = pharmacistRepository
+                .findFirstByUser_Id(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário", "id", userId.toString()));
+
+        Set<OwnAvailabilityProjection> availabilitiesByStartAndEndDate = availabilityRepository
+                .findOwnAvailabilitiesByStartAndEndDate(pharmacist.getId(), startTime, endTime);
+
+        return availabilitiesByStartAndEndDate.stream().map(this::convertProjectionToDto).collect(Collectors.toSet());
     }
 
     @Override
@@ -96,8 +111,36 @@ public class AvailabilityServiceImpl implements AvailabilityService {
         pharmacist.getAvailabilities().add(availability);
         availability.setPharmacist(pharmacist);
 
+
         // It doesn't save a new pharmacist - if pharmacist has id, it updates. Otherwise, it creates a new one
         pharmacistRepository.save(pharmacist);
+    }
+
+    private OwnAvailabilityDTO convertProjectionToDto(OwnAvailabilityProjection projection) {
+        if (projection == null) {
+            return null;
+        }
+
+        // 1. Lógica para decidir qual ID usar
+        UUID id = projection.getAppointmentId() != null ? projection.getAppointmentId() : projection.getAvailabilityId();
+
+        // 2. Mapeamento direto
+        LocalDateTime startTime = projection.getStartTime();
+        Integer durationMinutes = projection.getDurationMinutes();
+
+        // 3. Conversão de String para Enum
+        AppointmentOrAvailability type = AppointmentOrAvailability.valueOf(projection.getType());
+
+        // 4. Tratamento de campos que podem ser nulos na projeção
+        // Para satisfazer o @NotNull do DTO, fornecemos valores padrão.
+        String patientName = projection.getPatientName() != null ? projection.getPatientName() : "Vaga Disponível";
+
+        AppointmentStatusName status = projection.getStatus() != null
+            ? AppointmentStatusName.valueOf(projection.getStatus())
+            : AppointmentStatusName.DISPONIVEL; // Supondo que você tenha um status 'DISPONIVEL' no enum
+
+        // 5. Criação do DTO
+        return new OwnAvailabilityDTO(id, startTime, durationMinutes, type, patientName, status);
     }
 
     private boolean verifyPharmacistHasOverlapSchedule(Pharmacist pharmacist,

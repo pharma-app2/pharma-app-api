@@ -3,6 +3,7 @@ package org.pharma.app.pharmaappapi.controllers;
 import jakarta.validation.Valid;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityCreateDTO;
 import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.AvailabilityParameters;
+import org.pharma.app.pharmaappapi.payloads.availabilityDTOs.OwnAvailabilityDTO;
 import org.pharma.app.pharmaappapi.security.services.UserDetailsImpl;
 import org.pharma.app.pharmaappapi.services.availabilityService.AvailabilityService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,7 +42,27 @@ public class AvailabilityController {
         return ResponseEntity.status(HttpStatus.OK).body(availabilities);
     }
 
-    @PostMapping("/pharmacists/availabilities")
+    @GetMapping("/pharmacists/me/availabilities")
+    @PreAuthorize("hasRole('ROLE_PHARMACIST')")
+    public ResponseEntity<Set<OwnAvailabilityDTO>> getOwnAvailabilities(
+            Authentication authentication,
+            @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        AvailabilityParameters params = new AvailabilityParameters
+                .Builder()
+                .withStartDate(startDate)
+                .withEndDate(endDate)
+                .build();
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UUID userId = userDetails.getId();
+
+        Set<OwnAvailabilityDTO> availabilities = availabilityService.getOwnAvailabilities(userId, params);
+
+        return ResponseEntity.status(HttpStatus.OK).body(availabilities);
+    }
+
+    @PostMapping("/pharmacists/me/availabilities")
     @PreAuthorize("hasRole('ROLE_PHARMACIST')")
     public ResponseEntity<?> createAvailability(
             Authentication authentication,
