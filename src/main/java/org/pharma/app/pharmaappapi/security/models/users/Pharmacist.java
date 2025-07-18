@@ -23,6 +23,7 @@ import java.util.UUID;
         targetClass = ProfileByParamsProjection.class, //  classe de destino.
         columns = { // 4. Mapeia cada coluna/alias do seu SELECT para um parâmetro do construtor do DTO.
             @ColumnResult(name = "pharmacistName", type = String.class),
+            @ColumnResult(name = "id", type = UUID.class),
             @ColumnResult(name = "address", type = String.class),
             @ColumnResult(name = "acceptsRemote", type = Boolean.class),
             @ColumnResult(name = "ibgeApiCity", type = String.class),

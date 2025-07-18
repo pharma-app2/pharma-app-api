@@ -17,7 +17,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 
         // 1. Começamos com a parte da query que é sempre igual
         StringBuilder sql = new StringBuilder(
-                "SELECT u.full_name AS pharmacistName, pl.address, p.accepts_remote AS acceptsRemote, " +
+                "SELECT u.full_name AS pharmacistName, p.id, pl.address, p.accepts_remote AS acceptsRemote, " +
                         "pl.ibge_api_city AS ibgeApiCity, pl.ibge_api_state AS ibgeApiState " +
                         "FROM pharmacists p " +
                         "LEFT JOIN users u ON u.id = p.user_id " +

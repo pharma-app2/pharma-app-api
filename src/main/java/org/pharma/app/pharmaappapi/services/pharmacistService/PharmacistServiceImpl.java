@@ -136,6 +136,7 @@ public class PharmacistServiceImpl implements PharmacistService {
             ProfileSearchParamsDTO availabilitySearchParamsDTO = new ProfileSearchParamsDTO();
 
             availabilitySearchParamsDTO.setPharmacistName(availability.pharmacistName());
+            availabilitySearchParamsDTO.setId(availability.id().toString());
             availabilitySearchParamsDTO.setIbgeApiCity(availability.ibgeApiCity());
             availabilitySearchParamsDTO.setIbgeApiState(availability.ibgeApiState());
             availabilitySearchParamsDTO.setAddress(availability.address());
