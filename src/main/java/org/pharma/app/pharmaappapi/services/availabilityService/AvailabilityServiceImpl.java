@@ -31,6 +31,21 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     }
 
     @Override
+    public void deleteAvailability(UUID userId, UUID availabilityId) {
+        Availability availability = availabilityRepository
+                .findFirstById(availabilityId)
+                .orElseThrow(() -> new ResourceNotFoundException("Horário", "id", availabilityId.toString()));
+
+        Pharmacist pharmacist = pharmacistRepository
+                .findFirstByUser_Id(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário", "id", userId.toString()));
+
+        pharmacist.getAvailabilities().remove(availability);
+
+        pharmacistRepository.save(pharmacist);
+    }
+
+    @Override
     public Set<OwnAvailabilityDTO> getOwnAvailabilities(UUID userId, AvailabilityParameters params) {
         LocalDateTime startTime = params.getStartDate().atStartOfDay();
         LocalDateTime endTime = params.getEndDate().plusDays(1).atStartOfDay();
