@@ -75,4 +75,16 @@ public class AvailabilityController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
+
+    @DeleteMapping("/pharmacists/me/availabilities/{availabilityId}")
+    @PreAuthorize("hasRole('ROLE_PHARMACIST')")
+    public ResponseEntity<?> deleteAvailability(Authentication authentication, @PathVariable UUID availabilityId) {
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UUID userId = userDetails.getId();
+
+        availabilityService.deleteAvailability(userId, availabilityId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
 }

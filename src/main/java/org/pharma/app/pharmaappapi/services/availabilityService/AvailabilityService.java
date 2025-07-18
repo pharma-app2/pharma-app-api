@@ -12,4 +12,5 @@ public interface AvailabilityService {
     void createAvailability(UUID userId, AvailabilityCreateDTO pharmacistAvailabilityDTO);
     Set<AvailabilityCreateDTO> getAvailabilitiesFromPharmacist(UUID pharmacistId, AvailabilityParameters params);
     Set<OwnAvailabilityDTO> getOwnAvailabilities(UUID userId, AvailabilityParameters params);
+    void deleteAvailability(UUID userId, UUID availabilityId);
 }
