@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -83,4 +84,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     Set<AppointmentPharmacistProjection> findPharmacistFutureAppointments(
             @Param("userIdPlaceholder") UUID userId
     );
+
+    Optional<Appointment> findFirstById(UUID id);
 }

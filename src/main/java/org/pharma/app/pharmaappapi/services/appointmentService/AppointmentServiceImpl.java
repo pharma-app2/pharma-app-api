@@ -39,6 +39,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final ProfileRepository pharmacistRepository;
     private final PatientRepository patientRepository;
     private final AvailabilityRepository pharmacistAvailabilityRepository;
+    private final AvailabilityRepository availabilityRepository;
 
     public AppointmentServiceImpl(
             ModelMapper modelMapper,
@@ -47,7 +48,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             AppointmentStatusRepository appointmentStatusRepository,
             ProfileRepository pharmacistRepository,
             PatientRepository patientRepository,
-            AvailabilityRepository pharmacistAvailabilityRepository) {
+            AvailabilityRepository pharmacistAvailabilityRepository, AvailabilityRepository availabilityRepository) {
         this.modelMapper = modelMapper;
         this.appointmentRepository = appointmentRepository;
         this.appointmentModalityRepository = appointmentModalityRepository;
@@ -55,6 +56,32 @@ public class AppointmentServiceImpl implements AppointmentService {
         this.pharmacistRepository = pharmacistRepository;
         this.patientRepository = patientRepository;
         this.pharmacistAvailabilityRepository = pharmacistAvailabilityRepository;
+        this.availabilityRepository = availabilityRepository;
+    }
+
+    @Override
+    @Transactional
+    public void deleteAppointment(UUID userId, UUID appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", "id", appointmentId.toString()));
+
+        // Verifique se o usuário que está pedindo a exclusão é o paciente ou o farmacêutico da consulta
+        UUID patientUserId = appointment.getPatient().getUser().getId();
+        UUID pharmacistUserId = appointment.getAvailability().getPharmacist().getUser().getId();
+        if (!userId.equals(patientUserId) && !userId.equals(pharmacistUserId)) {
+            throw new ForbiddenException("You are not authorized to delete this appointment.");
+        }
+
+        Availability availability = appointment.getAvailability();
+
+        if (availability != null) {
+            availability.setAppointment(null);
+            // Não é estritamente necessário salvar aqui, o 'dirty checking' do @Transactional faria isso,
+            // mas ser explícito ajuda na clareza.
+            availabilityRepository.save(availability);
+        }
+
+        appointmentRepository.delete(appointment);
     }
 
     @Override

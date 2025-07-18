@@ -12,4 +12,5 @@ public interface AppointmentService {
     CreateAppointmentDTO createAppointment(UserDetailsImpl userDetails, CreateAppointmentDTO createAppointmentDTO);
     Set<AppointmentPatientProjection> getPatientFutureAppointments(UUID userId);
     Set<AppointmentPharmacistProjection> getPharmacistFutureAppointments(UUID userId);
+    void deleteAppointment(UUID userId, UUID appointmentId);
 }

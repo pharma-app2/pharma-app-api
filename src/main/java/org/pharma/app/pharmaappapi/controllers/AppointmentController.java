@@ -62,4 +62,15 @@ public class AppointmentController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(appointments);
     }
+
+    @DeleteMapping("pharmacists/me/appointments/{appointmentId}")
+    @PreAuthorize("hasRole('ROLE_PHARMACIST')")
+    public ResponseEntity<?> deleteAppointment(Authentication authentication, @PathVariable UUID appointmentId) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UUID userId = userDetails.getId();
+
+        appointmentService.deleteAppointment(userId, appointmentId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
 }
