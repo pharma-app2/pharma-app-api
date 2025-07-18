@@ -10,7 +10,8 @@ import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatus;
 import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatusName;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
-import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentProjection;
+import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentPatientProjection;
+import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentPharmacistProjection;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentRepository;
 import org.pharma.app.pharmaappapi.repositories.AppointmentStatusRepository;
 import org.pharma.app.pharmaappapi.repositories.PatientRepository;
@@ -119,7 +120,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Set<AppointmentProjection> getPatientFutureAppointments(UUID userId) {
+    public Set<AppointmentPatientProjection> getPatientFutureAppointments(UUID userId) {
         return appointmentRepository.findPatientFutureAppointments(userId);
+    }
+
+    @Override
+    public Set<AppointmentPharmacistProjection> getPharmacistFutureAppointments(UUID userId) {
+        return appointmentRepository.findPharmacistFutureAppointments(userId);
     }
 }
