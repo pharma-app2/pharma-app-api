@@ -13,6 +13,9 @@ public class ProfileSearchParamsDTO {
     @ToString.Include
     private String pharmacistName;
 
+    @ToString.Include
+    private String id;
+
     @NotNull
     @ToString.Include
     private String address;
