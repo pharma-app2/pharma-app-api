@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class CreateAppointmentDTO {
-    @NotNull
-    private UUID patientId;
-    private UUID availabilityId;
-    private Boolean isRemote;
+@NoArgsConstructor
+public class AppointmentPatientDTO {
+    private @NotNull UUID id;
+    private @NotNull String name;
+    private @NotNull @Email String email;
 }
