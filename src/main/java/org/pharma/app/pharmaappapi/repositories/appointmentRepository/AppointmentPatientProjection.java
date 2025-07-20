@@ -8,6 +8,5 @@ public interface AppointmentPatientProjection {
     LocalDateTime getStartTime();
     Integer getDurationMinutes();
     String getPatientName();
-    String getModality();
     String getStatus();
 }

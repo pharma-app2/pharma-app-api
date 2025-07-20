@@ -18,14 +18,12 @@ public interface ProfileRepository extends JpaRepository<Pharmacist, UUID>, Prof
             nativeQuery = true,
             value = "SELECT u.full_name AS fullName, u.email, p.crf, p.accepts_remote, hp.plan_name AS planName, " +
                     "pl.address, pl.phone1, pl.phone2, pl.phone3, pl.ibge_api_city_id AS ibgeApiCityId, " +
-                    "pl.ibge_api_city AS ibgeApiCity, pl.ibge_api_state AS ibgeApiState, am.name AS modality " +
+                    "pl.ibge_api_city AS ibgeApiCity, pl.ibge_api_state AS ibgeApiState " +
                     "FROM users u " +
                     "LEFT JOIN pharmacists p ON u.id = p.user_id " +
                     "LEFT JOIN health_plans_pharmacists hpp ON hpp.pharmacist_id = p.id " +
                     "LEFT JOIN health_plans hp ON hp.id = hpp.health_plan_id " +
                     "LEFT JOIN pharmacist_locations pl ON pl.pharmacist_id = p.id " +
-                    "LEFT JOIN pharmacists_appointments_modality pam ON pam.pharmacist_id = p.id " +
-                    "LEFT JOIN appointments_modality am ON am.id = pam.appointments_modality_id " +
                     "WHERE u.id = :userIdPlaceholder;"
     )
     Set<PharmacistProfileFlatProjection> findPharmacistProfile(@Param("userIdPlaceholder") UUID userId);

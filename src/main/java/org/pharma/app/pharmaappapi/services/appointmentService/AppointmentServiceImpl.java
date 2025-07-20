@@ -4,20 +4,19 @@ import org.modelmapper.ModelMapper;
 import org.pharma.app.pharmaappapi.exceptions.ConflictException;
 import org.pharma.app.pharmaappapi.exceptions.ForbiddenException;
 import org.pharma.app.pharmaappapi.exceptions.ResourceNotFoundException;
-import org.pharma.app.pharmaappapi.models.appointments.Appointment;
-import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
-import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatus;
-import org.pharma.app.pharmaappapi.models.appointments.AppointmentStatusName;
+import org.pharma.app.pharmaappapi.models.appointments.*;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
+import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.AppointmentDTO;
+import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.AppointmentPatientDTO;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
+import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.EventType;
+import org.pharma.app.pharmaappapi.repositories.AppointmentStatusRepository;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentPatientProjection;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentPharmacistProjection;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentRepository;
-import org.pharma.app.pharmaappapi.repositories.AppointmentStatusRepository;
-import org.pharma.app.pharmaappapi.repositories.PatientRepository;
-import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.ProfileRepository;
-import org.pharma.app.pharmaappapi.repositories.appointmentModalityRepository.AppointmentModalityRepository;
 import org.pharma.app.pharmaappapi.repositories.availabilityRepository.AvailabilityRepository;
+import org.pharma.app.pharmaappapi.repositories.patientRepository.PatientRepository;
+import org.pharma.app.pharmaappapi.repositories.pharmacistRepository.ProfileRepository;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
 import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 import org.pharma.app.pharmaappapi.security.models.users.RoleName;
@@ -27,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -34,7 +34,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private final ModelMapper modelMapper;
     private final AppointmentRepository appointmentRepository;
-    private final AppointmentModalityRepository appointmentModalityRepository;
     private final AppointmentStatusRepository appointmentStatusRepository;
     private final ProfileRepository pharmacistRepository;
     private final PatientRepository patientRepository;
@@ -44,14 +43,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentServiceImpl(
             ModelMapper modelMapper,
             AppointmentRepository appointmentRepository,
-            AppointmentModalityRepository appointmentModalityRepository,
             AppointmentStatusRepository appointmentStatusRepository,
             ProfileRepository pharmacistRepository,
             PatientRepository patientRepository,
             AvailabilityRepository pharmacistAvailabilityRepository, AvailabilityRepository availabilityRepository) {
         this.modelMapper = modelMapper;
         this.appointmentRepository = appointmentRepository;
-        this.appointmentModalityRepository = appointmentModalityRepository;
         this.appointmentStatusRepository = appointmentStatusRepository;
         this.pharmacistRepository = pharmacistRepository;
         this.patientRepository = patientRepository;
@@ -91,8 +88,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         String userRole = userDetails.getAuthorities().iterator().next().getAuthority();
 
         UUID patientId = createAppointmentDTO.getPatientId();
-        UUID modalityId = createAppointmentDTO.getModalityId();
         UUID pharmacistAvailabilityId = createAppointmentDTO.getAvailabilityId();
+        Boolean isRemote = createAppointmentDTO.getIsRemote();
 
         Availability availability = pharmacistAvailabilityRepository.findFirstById(pharmacistAvailabilityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Disponibilidade", "id", pharmacistAvailabilityId.toString()));
@@ -112,16 +109,8 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new ForbiddenException("Farmacêuticos só podem criar consultas para si mesmos");
         }
 
-        AppointmentModality appointmentModality = appointmentModalityRepository.findFirstById(modalityId)
-                .orElseThrow(() -> new ResourceNotFoundException("Modalidade", "id", modalityId.toString()));
-
         AppointmentStatus appointmentStatus = appointmentStatusRepository.findFirstByName(DEFAULT_STATUS_NAME)
                 .orElseThrow(() -> new ResourceNotFoundException("Status", "nome", DEFAULT_STATUS_NAME));
-
-        boolean isModalityAvailable = pharmacist.getAvailableModalities().contains(appointmentModality);
-        if (!isModalityAvailable) {
-            throw new ConflictException("Modalidade de consulta não disponível para esse farmacêutico");
-        }
 
         boolean patientHasAppointment = appointmentRepository.patientAlreadyHasSchedule(patient.getId(),AppointmentStatusName.AGENDADO.name(), AppointmentStatusName.CONFIRMADO.name(), availability.getStartTime());
         if (patientHasAppointment) {
@@ -135,13 +124,25 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         Appointment appointment = new Appointment();
 
-        appointment.setAppointmentModality(appointmentModality);
         appointment.setAppointmentStatus(appointmentStatus);
         appointment.setPatient(patient);
+        appointment.setIsRemote(isRemote);
 
         appointment.setAvailability(availability);
 
         Appointment savedAppointment = appointmentRepository.save(appointment);
+
+        AppointmentDTO appointmentDTO = new AppointmentDTO();
+        appointmentDTO.setId(savedAppointment.getId().toString());
+        appointmentDTO.setStartTime(savedAppointment.getAvailability().getStartTime());
+        appointmentDTO.setDurationMinutes(savedAppointment.getAvailability().getDurationMinutes());
+        appointmentDTO.setType(EventType.APPOINTMENT);
+
+        AppointmentPatientDTO appointmentPatient = new AppointmentPatientDTO();
+        appointmentPatient.setName(patient.getUser().getFullName());
+        appointmentPatient.setEmail(patient.getUser().getEmail());
+        appointmentPatient.setId(patientId);
+        appointmentDTO.setPatient(appointmentPatient);
 
         return modelMapper.map(savedAppointment, CreateAppointmentDTO.class);
     }
@@ -152,7 +153,26 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Set<AppointmentPharmacistProjection> getPharmacistFutureAppointments(UUID userId) {
-        return appointmentRepository.findPharmacistFutureAppointments(userId);
+    public Set<AppointmentDTO> getPharmacistFutureAppointments(UUID userId) {
+        Set<AppointmentPharmacistProjection> projections = appointmentRepository.findPharmacistFutureAppointments(userId);
+
+        return projections.stream().map(projection -> {
+            AppointmentDTO appointmentDTO = new AppointmentDTO();
+
+            appointmentDTO.setId(projection.getId().toString());
+            appointmentDTO.setStartTime(projection.getStartTime());
+            appointmentDTO.setDurationMinutes(projection.getDurationMinutes());
+            appointmentDTO.setStatus(AppointmentStatusName.valueOf(projection.getStatus()));
+            appointmentDTO.setType(EventType.APPOINTMENT);
+
+            AppointmentPatientDTO appointmentPatientDTO = new AppointmentPatientDTO();
+            appointmentPatientDTO.setId(projection.getPatientId());
+            appointmentPatientDTO.setName(projection.getPatientName());
+            appointmentPatientDTO.setEmail(projection.getPatientEmail());
+
+            appointmentDTO.setPatient(appointmentPatientDTO);
+
+            return appointmentDTO;
+        }).collect(Collectors.toSet());
     }
 }

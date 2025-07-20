@@ -52,10 +52,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     @Query(
             nativeQuery = true,
             value = "SELECT a.id, u_pharmacist.full_name AS pharmacistName, pa.start_time AS startTime, " +
-                    "pa.duration_minutes AS durationMinutes, aps.name AS status, am.name AS modality " +
+                    "pa.duration_minutes AS durationMinutes, aps.name AS status " +
                     "FROM appointments a " +
                     "LEFT JOIN appointments_status aps ON aps.id = a.appointments_status_id " +
-                    "LEFT JOIN appointments_modality am ON am.id = a.appointments_modality_id " +
                     "LEFT JOIN patients pt ON pt.id = a.patient_id " +
                     "LEFT JOIN pharmacist_availabilities pa ON pa.id = a.availability_id " +
                     "LEFT JOIN pharmacists p ON p.id = pa.pharmacist_id " +
@@ -69,11 +68,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
 
     @Query(
             nativeQuery = true,
-            value = "SELECT a.id, u_patient.full_name AS patientName, pa.start_time AS startTime, " +
-                    "pa.duration_minutes AS durationMinutes, aps.name AS status, am.name AS modality " +
+            value = "SELECT a.id, u_patient.full_name AS patientName, u_patient.email AS patientEmail, u_patient.id AS patientId, pa.start_time AS startTime, " +
+                    "pa.duration_minutes AS durationMinutes, aps.name AS status " +
                     "FROM appointments a " +
                     "LEFT JOIN appointments_status aps ON aps.id = a.appointments_status_id " +
-                    "LEFT JOIN appointments_modality am ON am.id = a.appointments_modality_id " +
                     "LEFT JOIN patients pt ON pt.id = a.patient_id " +
                     "LEFT JOIN pharmacist_availabilities pa ON pa.id = a.availability_id " +
                     "LEFT JOIN pharmacists p ON p.id = pa.pharmacist_id " +

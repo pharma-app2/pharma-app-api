@@ -1,6 +1,7 @@
 package org.pharma.app.pharmaappapi.controllers;
 
 import jakarta.validation.Valid;
+import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.AppointmentDTO;
 import org.pharma.app.pharmaappapi.payloads.appointmentDTOs.CreateAppointmentDTO;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentPatientProjection;
 import org.pharma.app.pharmaappapi.repositories.appointmentRepository.AppointmentPharmacistProjection;
@@ -24,17 +25,15 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    @PostMapping("/appointments/availabilities/{availabilityId}/modalities/{modalityId}")
+    @PostMapping("/appointments/availabilities/{availabilityId}")
     @PreAuthorize("hasAnyRole('ROLE_PATIENT', 'ROLE_PHARMACIST')")
     public ResponseEntity<CreateAppointmentDTO> createAppointment(
             Authentication authentication,
             @Valid @RequestBody CreateAppointmentDTO createAppointmentDTO,
-            @PathVariable UUID availabilityId,
-            @PathVariable UUID modalityId) {
+            @PathVariable UUID availabilityId) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         createAppointmentDTO.setAvailabilityId(availabilityId);
-        createAppointmentDTO.setModalityId(modalityId);
 
         CreateAppointmentDTO appointment = appointmentService.createAppointment(userDetails, createAppointmentDTO);
 
@@ -54,11 +53,11 @@ public class AppointmentController {
 
     @GetMapping("pharmacists/me/appointments")
     @PreAuthorize("hasRole('ROLE_PHARMACIST')")
-    public ResponseEntity<Set<AppointmentPharmacistProjection>> getPharmacistFutureAppointments(Authentication authentication) {
+    public ResponseEntity<Set<AppointmentDTO>> getPharmacistFutureAppointments(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         UUID userId = userDetails.getId();
 
-        Set<AppointmentPharmacistProjection> appointments = appointmentService.getPharmacistFutureAppointments(userId);
+        Set<AppointmentDTO> appointments = appointmentService.getPharmacistFutureAppointments(userId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(appointments);
     }

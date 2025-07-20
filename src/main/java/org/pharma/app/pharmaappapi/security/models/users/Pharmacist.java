@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.pharma.app.pharmaappapi.models.appointments.AppointmentModality;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.models.healthPlans.HealthPlan;
 import org.pharma.app.pharmaappapi.models.locations.PharmacistLocation;
@@ -118,26 +117,6 @@ public class Pharmacist {
             )
     )
     private Set<Patient> patients = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "pharmacists_appointments_modality",
-            joinColumns = @JoinColumn(
-                    name = "pharmacist_id",
-                    referencedColumnName = "id",
-                    nullable = false
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "appointments_modality_id",
-                    referencedColumnName = "id",
-                    nullable = false
-            ),
-            uniqueConstraints = @UniqueConstraint(
-                    name = "uk_pharmacist_appointments_modality_assoc",
-                    columnNames = { "pharmacist_id", "appointments_modality_id" }
-            )
-    )
-    private Set<AppointmentModality> availableModalities = new HashSet<>();
 
     @OneToMany(mappedBy = "pharmacist", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     private Set<Availability> availabilities;

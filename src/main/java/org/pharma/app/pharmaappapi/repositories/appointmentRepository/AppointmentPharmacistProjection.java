@@ -7,7 +7,8 @@ public interface AppointmentPharmacistProjection {
     UUID getId();
     LocalDateTime getStartTime();
     Integer getDurationMinutes();
+    UUID getPatientId();
+    String getPatientEmail();
     String getPatientName();
-    String getModality();
     String getStatus();
 }

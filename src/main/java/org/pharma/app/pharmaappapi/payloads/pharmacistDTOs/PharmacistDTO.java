@@ -31,9 +31,6 @@ public class PharmacistDTO {
     private String email;
 
     @NotNull
-    private Set<String> modalities;
-
-    @NotNull
     private Boolean acceptsRemote;
 
     @NotNull

@@ -13,5 +13,4 @@ public interface PharmacistProfileFlatProjection {
     Integer getIbgeApiCityId();
     String getIbgeApiCity();
     String getIbgeApiState();
-    String getModality();
 }

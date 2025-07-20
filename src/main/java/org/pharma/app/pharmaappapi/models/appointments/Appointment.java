@@ -1,13 +1,13 @@
 package org.pharma.app.pharmaappapi.models.appointments;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.pharma.app.pharmaappapi.models.availabilities.Availability;
 import org.pharma.app.pharmaappapi.security.models.users.Patient;
-import org.pharma.app.pharmaappapi.security.models.users.Pharmacist;
 
 import java.util.UUID;
 
@@ -36,6 +36,11 @@ public class Appointment {
     @ToString.Include
     private String pharmacistNotes;
 
+    @NotNull
+    @ToString.Include
+    @Column(name = "is_remote", nullable = false)
+    private Boolean isRemote = false;
+
     @Size(
             max = 10_000,
             message = "Reason must have less than 10000 characters"
@@ -47,10 +52,6 @@ public class Appointment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointments_status_id", referencedColumnName = "id", nullable = false)
     private AppointmentStatus appointmentStatus;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointments_modality_id", referencedColumnName = "id", nullable = false)
-    private AppointmentModality appointmentModality;
 
     // TODO: test all possibilities for CRUD at appointments -> delete an user (pharmacist and/or patient) and see what happens with appointments. Try to handle it with
     @ManyToOne(fetch = FetchType.LAZY)
